@@ -10,35 +10,43 @@ The following guide describes how to setup your Webtop Lite Single Page Applicat
 
 ## 2. Getting Started
 
-#### Backend Workflow
+#### Backend Preparation
 
-* Run Documentum VM and copy the IP address of your VM.
-* Clone the Spring boot project `git clone git@github.com:Enterprise-Content-Management/emcworld2016-hackathon-documentum-rest.git/dctm-webtop-lite-api`. After cloning the project, update the properties file with your VM IP. Check the `README.md` file for detailed step by step instructions. 
+* Run Documentum VM and REST Services
+* Clone the [Webtop Lite API](https://github.com/Enterprise-Content-Management/emcworld2016-hackathon-documentum-rest/tree/master/webtop-lite-api) project to your local workspace
+>   git clone git@github.com:Enterprise-Content-Management/emcworld2016-hackathon-documentum-rest.git/webtop-lite-api
+      
+* Check the [README.md](https://github.com/Enterprise-Content-Management/emcworld2016-hackathon-documentum-rest/blob/master/webtop-lite-api/README.md) file for detailed instructions of running the Webtop Lite API Server
+* Assumed that your Webtop Lite API Server is started up and has the root URL as `http://localhost:8080/webtop-lite-api-0.0.1-SNAPSHOT` 
 
-#### Frontend Workflow
+#### Setup Project
 
-Clone the project using `git clone git@github.com:Enterprise-Content-Management/emcworld2016-hackathon-documentum-rest.git/dctm-webtop-lite-ui`. After the project is cloned navigate to the project directory.
+* Clone the project using 
+>  git clone git@github.com:Enterprise-Content-Management/emcworld2016-hackathon-documentum-rest.git/webtop-lite-ui
 
-If you don't have [bower](http://bower.io/) installed yet, run below CLI command to install it:
+* Navigate to the project directory in your local copy
+* Modify the constant value `SPRING_API` in the [Config.js](https://github.com/Enterprise-Content-Management/emcworld2016-hackathon-documentum-rest/blob/master/webtop-lite-ui/src/app/filemanager/providers/config.js) file. Change its value to the root URL of your Webtop Lite API Server, e.g. `http://localhost:8080/webtop-lite-api-0.0.1-SNAPSHOT`
+
+#### Build and Run
+* If you don't have [bower](http://bower.io/) installed yet, run below CLI command to install it:
 ``` 
 npm install -g bower
 ```
-If you don't have [gulp](http://gulpjs.com/) installed yet, run below CLI command to install it:
+* If you don't have [gulp](http://gulpjs.com/) installed yet, run below CLI command to install it:
 ```
 npm install -g gulp
 ```
-Run below CLI commands to build the project:
+* Run below CLI commands to build the project:
 ```
 npm install --save-dev
 bower install 
 gulp
 ```
-Run below CLI to start the SPA in a local web server (default port to 3000):
+* Run below CLI to start the SPA in a local web server (default port to 3000):
 ```
 gulp serve
 ```
-##### Note
-Add the IP address of your machine that is running the Spring boot and port by changing the constant value `SPRING_API` in the `Config.js` file.
+Your web browser will be promoted to access the URL `http://localhost:3000`. If it did not get promoted, try to manually access this URL in your web browser.
 
 
 ## 3. Troubleshoot

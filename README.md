@@ -1,10 +1,8 @@
 ## Documentum REST Sample for Webtop Lite
 
-The following guide describes how to setup your Webtop Lite to access Documentum content using Documentum REST Services.
-
-The project contains two sub projects:
-* `Documentum REST Sample for Webtop Lite UI`
-* `Documentum REST Sample for Webtop Lite API`
+The project contains two sub projects for EMC World 2016 Documentum REST Hackathon demo:
+* [Webtop Lite API](https://github.com/Enterprise-Content-Management/emcworld2016-hackathon-documentum-rest/tree/master/webtop-lite-api)
+* [Webtop Lite UI](https://github.com/Enterprise-Content-Management/emcworld2016-hackathon-documentum-rest/tree/master/webtop-lite-ui)
 
 
 
