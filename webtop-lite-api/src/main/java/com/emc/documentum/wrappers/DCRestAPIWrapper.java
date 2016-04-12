@@ -72,16 +72,11 @@ public class DCRestAPIWrapper {
 	}
 
 	private HttpHeaders createHeaders(String username, String password) {
-		return new HttpHeaders() {
-			private static final long serialVersionUID = -3310695110391522574L;
-
-			{
-				String usernameAndPassword = username + ":" + password;
-				String authHeader = "Basic " + new String(Base64.encodeBase64(usernameAndPassword.getBytes()));
-				set("Authorization", authHeader);
-			}
-		};
-
+		HttpHeaders headers = new HttpHeaders();
+		String usernameAndPassword = username + ":" + password;
+		String authHeader = "Basic " + new String(Base64.encodeBase64(usernameAndPassword.getBytes()));
+		headers.set("Authorization", authHeader);
+		return headers;
 	}
 
 	/*

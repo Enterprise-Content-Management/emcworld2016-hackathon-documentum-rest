@@ -29,7 +29,7 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import net.minidev.json.parser.ParseException;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin
 @RestController
 public class FileManagerController extends BaseController{
 

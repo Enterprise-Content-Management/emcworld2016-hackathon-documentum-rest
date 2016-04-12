@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import com.emc.documentum.constants.Cardinality;
@@ -36,7 +37,7 @@ public class CoreRestTransformation {
 		ArrayList<DocumentumProperty> objectProperties = documentumObject.getProperties();
 		Iterator<Entry<String, Object>> it = properties.entrySet().iterator();
 	    while (it.hasNext()) {
-	    	HashMap.Entry<String, Object> pair = it.next();
+			Map.Entry<String, Object> pair = it.next();
 	    	Object value = pair.getValue();
 	    	Cardinality cardinality = Cardinality.Single;
 	    	if(value instanceof List<?>){

@@ -21,14 +21,6 @@
         $scope.fileList = [];
         $scope.temps = [];
 
-        $scope.base_api = 'Rest';
-
-        $scope.setApiBase = function(API_Base){
-            $scope.base_api = API_Base;
-            $scope.apiMiddleware.setApiBase(API_Base);
-            console.log($http.defaults.headers);
-        };
-
         $scope.$watch('temps', function() {
             if ($scope.singleSelection()) {
                 $scope.temp = $scope.singleSelection();

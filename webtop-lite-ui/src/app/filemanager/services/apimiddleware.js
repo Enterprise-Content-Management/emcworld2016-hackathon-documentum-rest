@@ -7,10 +7,6 @@
             this.apiHandler = new ApiHandler();
         };
 
-        ApiMiddleware.prototype.setApiBase = function(API_BASE){
-            this.apiHandler.setApiBase(API_BASE);
-        };
-
         ApiMiddleware.prototype.getPath = function(arrayPath) {
             return '/' + arrayPath.join('/');
         };

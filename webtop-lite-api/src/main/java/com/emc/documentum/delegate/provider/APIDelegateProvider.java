@@ -31,7 +31,9 @@ public class APIDelegateProvider {
 		}
 	}
 
-	public DocumentumDelegate getDelegate(String delegateIdentifier) throws DelegateNotFoundException {
+	public DocumentumDelegate getDelegate() throws DelegateNotFoundException {
+        //todo: remove core rest identifier
+		String delegateIdentifier = "corerest";
 		if (apiDelegates.containsKey(delegateIdentifier)) {
 			return apiDelegates.get(delegateIdentifier);
 		}

@@ -4,8 +4,6 @@
         function ($http, $q, $window, $translate) {
 
         $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-        $http.defaults.headers.common['API_BASE'] = 'Rest';
-
 
         var ApiHandler = function() {
             this.inprocess = false;
@@ -30,10 +28,6 @@
                 return deferred.reject(data);
             }
             return deferred.resolve(data);
-        };
-
-        ApiHandler.prototype.setApiBase = function(API_BASE) {
-            $http.defaults.headers.common['API_BASE'] = API_BASE;
         };
 
         ApiHandler.prototype.list = function(apiUrl, path, customDeferredHandler) {

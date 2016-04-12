@@ -14,19 +14,19 @@ public class DCCoreRestConstants {
 	@Value("${documentum.corerest.repo}")
 	public  String repo;
 
-	@Value("http://${documentum.corerest.host}:8080/dctm-rest/repositories/${documentum.corerest.repo}/currentuser")
+	@Value("http://${documentum.corerest.host}:${documentum.corerest.port}/dctm-rest/repositories/${documentum.corerest.repo}/currentuser")
 	public  String currentUserURI;
-	@Value("http://${documentum.corerest.host}:8080/dctm-rest/repositories/${documentum.corerest.repo}?dql=")
+	@Value("http://${documentum.corerest.host}:${documentum.corerest.port}/dctm-rest/repositories/${documentum.corerest.repo}?dql=")
 	public  String dqlQuery;
-	@Value("http://${documentum.corerest.host}:8080/dctm-rest/repositories/${documentum.corerest.repo}/objects")
+	@Value("http://${documentum.corerest.host}:${documentum.corerest.port}/dctm-rest/repositories/${documentum.corerest.repo}/objects")
 	public  String fetchObjectUri;
 	@Value("${documentum.corerest.username}")
 	public  String username;
 	@Value("${documentum.corerest.password}")
 	public  String password;
-	@Value("http://${documentum.corerest.host}:8080/dctm-rest/repositories/${documentum.corerest.repo}/cabinets")
+	@Value("http://${documentum.corerest.host}:${documentum.corerest.port}/dctm-rest/repositories/${documentum.corerest.repo}/cabinets")
 	public  String fetchCabinetURI;
-	@Value("http://${documentum.corerest.host}:8080/dctm-rest/repositories/${documentum.corerest.repo}/folders")
+	@Value("http://${documentum.corerest.host}:${documentum.corerest.port}/dctm-rest/repositories/${documentum.corerest.repo}/folders")
 	public  String fetchFolderURI;
 
 }

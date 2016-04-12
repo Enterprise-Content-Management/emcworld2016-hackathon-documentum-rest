@@ -1,7 +1,7 @@
 (function(angular) {
     'use strict';
     angular.module('FileManager')
-    .constant('SPRING_API', 'http://127.0.0.1:8080/file-manager-api')
+    .constant('SPRING_API', 'http://localhost:8000/webtop-lite-api-0.0.1-SNAPSHOT')
     .provider('fileManagerConfig', function(SPRING_API) {
 
         var values = {
@@ -12,10 +12,12 @@
             uploadUrl: SPRING_API + '/api/uploadUrl',
             renameUrl: SPRING_API + '/api/renameUrl',
             copyUrl: SPRING_API + '/api/copyUrl',
+            moveUrl: SPRING_API + '/api/moveUrl',
             removeUrl: SPRING_API + '/api/deleteFolderUrl',
             editUrl: SPRING_API + '/api/editUrl',
             getContentUrl: SPRING_API + '/api/document/content',
             createFolderUrl: SPRING_API + '/api/createFolderUrl',
+            downloadMultipleUrl: SPRING_API + '/api/document/content',
             downloadFileUrl: SPRING_API + '/api/document/content',
             compressUrl: SPRING_API + '/api/compressUrl',
             extractUrl: SPRING_API + '/api/extractUrl',
@@ -28,6 +30,7 @@
                 upload: true,
                 rename: true,
                 copy: true,
+                move:true,
                 edit: true,
                 changePermissions: true,
                 compress: true,

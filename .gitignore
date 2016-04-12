@@ -1,9 +1,11 @@
-**/.idea/**
+**/.idea/
 **/*.iml
+**/*.ipr
+**/*.iws
 **/.tmp/
 **/.DS_Store
 
-webtop-lite-api/target/**
+webtop-lite-api/target/
 
 webtop-lite-ui/node_modules/
 webtop-lite-ui/bower_components/

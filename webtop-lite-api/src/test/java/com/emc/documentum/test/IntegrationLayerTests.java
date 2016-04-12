@@ -1,7 +1,5 @@
 package com.emc.documentum.test;
 
-import java.text.DateFormat;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +16,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.emc.documentum.RestSampleUser1Application;
+import com.emc.documentum.WebtopLiteApiApplication;
 import com.emc.documentum.dtos.DocumentumFolder;
 
 /**
@@ -26,7 +24,7 @@ import com.emc.documentum.dtos.DocumentumFolder;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = RestSampleUser1Application.class)
+@SpringApplicationConfiguration(classes = WebtopLiteApiApplication.class)
 @WebAppConfiguration
 @IntegrationTest({ "server.port=0", "management.port=0" })
 @DirtiesContext
