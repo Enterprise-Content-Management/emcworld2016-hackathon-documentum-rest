@@ -1,0 +1,13 @@
+**/.idea/**
+**/*.iml
+**/.tmp/
+**/.DS_Store
+
+webtop-lite-api/target/**
+
+webtop-lite-ui/node_modules/
+webtop-lite-ui/bower_components/
+webtop-lite-ui/coverage/
+webtop-lite-ui/.sass-cache/
+webtop-lite-ui/dist/
+webtop-lite-ui/**/.eslintrc
