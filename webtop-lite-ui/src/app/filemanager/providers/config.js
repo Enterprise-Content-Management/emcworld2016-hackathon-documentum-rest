@@ -42,6 +42,8 @@
             },
 
             showSizeForDirectories: false,
+            hideDate: false,
+            hidePermissions: false,
             useBinarySizePrefixes: false,
 
             previewImagesInModal: true,

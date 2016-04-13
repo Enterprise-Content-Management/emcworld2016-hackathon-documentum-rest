@@ -61,7 +61,7 @@
                 </span>
             </td>
             <td class="hidden-sm hidden-xs" ng-hide="config.hideDate">
-                {{item.model.date | formatDate }}
+                {{item.model.date | date:'medium' }}
             </td>
             <td class="hidden-sm hidden-xs" ng-hide="config.hidePermissions">
                 {{item.model.perms.toCode(item.model.type === 'dir'?'d':'-')}}
