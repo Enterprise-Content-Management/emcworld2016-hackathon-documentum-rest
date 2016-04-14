@@ -4,8 +4,6 @@ import java.util.Iterator;
 import javax.servlet.http.Part;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.emc.documentum.exceptions.DocumentumException;
-import com.emc.documentum.exceptions.RepositoryNotAvailableException;
 import com.emc.documentum.filemanager.api.FileManagerApi;
 import com.emc.documentum.filemanager.dtos.in.CopyMoveObjectsRequest;
 import com.emc.documentum.filemanager.dtos.in.DeleteObjectsRequest;
@@ -28,6 +25,7 @@ import com.emc.documentum.filemanager.dtos.in.ListObjectsRequest;
 import com.emc.documentum.filemanager.dtos.in.NewFolderRequest;
 import com.emc.documentum.filemanager.dtos.in.RenameObjectRequest;
 import com.emc.documentum.filemanager.dtos.out.Collection;
+import com.emc.documentum.filemanager.dtos.out.CommonResult;
 import com.emc.documentum.filemanager.dtos.out.Data;
 import com.emc.documentum.restclient.model.ByteArrayResource;
 import com.google.common.base.Strings;
@@ -36,8 +34,6 @@ import com.google.common.base.Strings;
 @RestController
 @RequestMapping("/api")
 public class FileManagerController extends BaseController {
-
-	private static final  Log LOGGER = LogFactory.getLog(FileManagerController.class);
 
     @Autowired
     FileManagerApi fileManagerApi;
@@ -65,7 +61,7 @@ public class FileManagerController extends BaseController {
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String createFolderUrl(@RequestBody NewFolderRequest request) throws DocumentumException {
+    public CommonResult createFolderUrl(@RequestBody NewFolderRequest request) throws DocumentumException {
         fileManagerApi.createFolderByParentId(request.getParentFolderId(), request.getName()) ;
         return commonResponse();
 	}
@@ -74,7 +70,7 @@ public class FileManagerController extends BaseController {
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String renameUrl(@RequestBody RenameObjectRequest request) throws DocumentumException {
+    public CommonResult renameUrl(@RequestBody RenameObjectRequest request) throws DocumentumException {
         fileManagerApi.renameByPath(request.getItem(), request.getNewItemPath());
         return commonResponse();
     }
@@ -83,7 +79,7 @@ public class FileManagerController extends BaseController {
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String moveUrl(@RequestBody CopyMoveObjectsRequest request) throws DocumentumException {
+    public CommonResult moveUrl(@RequestBody CopyMoveObjectsRequest request) throws DocumentumException {
         //todo: ui has bugs on selecting the target path
         for (String id : request.getItems()) {
             fileManagerApi.moveObject(id, request.getNewPath());
@@ -91,8 +87,10 @@ public class FileManagerController extends BaseController {
         return commonResponse();
     }
 
-    @RequestMapping(value = "/copyUrl", method = RequestMethod.POST)
-    public String copyUrl(@RequestBody CopyMoveObjectsRequest request) throws DocumentumException {
+    @RequestMapping(value = "/copyUrl",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public CommonResult copyUrl(@RequestBody CopyMoveObjectsRequest request) throws DocumentumException {
         for (String id : request.getItems()) {
             fileManagerApi.copyObject(id, request.getNewPath());
         }
@@ -103,7 +101,7 @@ public class FileManagerController extends BaseController {
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String deleteFolderUrl(@RequestBody DeleteObjectsRequest request) throws DocumentumException {
+    public CommonResult deleteFolderUrl(@RequestBody DeleteObjectsRequest request) throws DocumentumException {
         for (String id : request.getItems()) {
             //TODO should get this boolean from UI
             fileManagerApi.deleteObjectById(id, false);
@@ -140,7 +138,7 @@ public class FileManagerController extends BaseController {
             method = RequestMethod.POST,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String uploadUrl(MultipartHttpServletRequest request) throws DocumentumException {
+    public CommonResult uploadUrl(MultipartHttpServletRequest request) throws DocumentumException {
         try {
             String targetFolderPath = null;
             Iterator<Part> parts = request.getParts().iterator();
@@ -166,33 +164,18 @@ public class FileManagerController extends BaseController {
     //todo//////////////     todo for below methods   - 1st round //////////////////////
     //todo//////////////////////////////////////////////////////////////////////////////
 
-    @RequestMapping(value = "/FOLDERS/content/{folderId}/startIndex/pageSize")
-    public Collection paginationService(@PathVariable(value="folderId")String folderId , @PathVariable(value="startIndex")String startIndex , @PathVariable(value="pageSize")String pageSize)
-            throws DocumentumException {
-        //TODO to be implemented
-        Collection result = null;
-        try {
-            result = fileManagerApi.getPaginatedResult(folderId, 0, 0);
-            return result;
-        } catch (RepositoryNotAvailableException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    @RequestMapping(value = "/editUrl", method = RequestMethod.POST)
-    public String editUrl() {
+    @RequestMapping(value = "/editUrl", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public CommonResult editUrl() {
         return commonResponse();
     }
 
-    @RequestMapping(value = "/permissionsUrl", method = RequestMethod.POST)
-    public String permissionsUrl() {
-		return commonResponse();
+    @RequestMapping(value = "/permissionsUrl", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public CommonResult permissionsUrl() {
+        return commonResponse();
 	}
 
-    @RequestMapping(value = "/extractUrl", method = RequestMethod.POST)
-    public String extractUrl() {
-		return commonResponse();
+    @RequestMapping(value = "/extractUrl", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public CommonResult extractUrl() {
+        return commonResponse();
 	}
 }

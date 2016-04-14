@@ -8,18 +8,11 @@ import java.util.HashMap;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.ResourceAccessException;
 
-import com.emc.documentum.exceptions.CabinetNotFoundException;
-import com.emc.documentum.exceptions.DocumentCreationException;
-import com.emc.documentum.exceptions.DocumentNotFoundException;
 import com.emc.documentum.exceptions.DocumentumException;
-import com.emc.documentum.exceptions.FolderCreationException;
-import com.emc.documentum.exceptions.RepositoryNotAvailableException;
+import com.emc.documentum.filemanager.dtos.in.NewDocumentRequest;
 import com.emc.documentum.filemanager.dtos.out.Collection;
-import com.emc.documentum.filemanager.dtos.DocumentCreation;
 import com.emc.documentum.filemanager.dtos.out.Item;
-import com.emc.documentum.restclient.DctmRestClient;
 import com.emc.documentum.restclient.DctmRestClientX;
 import com.emc.documentum.restclient.model.ByteArrayResource;
 import com.emc.documentum.restclient.model.JsonObject;
@@ -32,6 +25,11 @@ public class FileManagerApiImpl implements FileManagerApi {
 
 	@Autowired
 	DctmRestClientX restClientX;
+
+    @Override
+    public void deleteObjectById(String objectId, boolean deleteChildrenOrNot) throws DocumentumException {
+        restClientX.deleteObjectById(objectId, deleteChildrenOrNot);
+    }
 
     @Override
     public Collection getChildren(String path, int pageNumber, int pageSize)
@@ -50,11 +48,6 @@ public class FileManagerApiImpl implements FileManagerApi {
             throws DocumentumException {
         JsonObject folder = restClientX.createFolder(parentId, folderName);
         return convertJsonObject(folder);
-    }
-
-    @Override
-    public void deleteObjectById(String objectId, boolean deleteChildrenOrNot) throws DocumentumException {
-        restClientX.deleteObjectById(objectId, deleteChildrenOrNot);
     }
 
     @Override
@@ -110,149 +103,44 @@ public class FileManagerApiImpl implements FileManagerApi {
     //todo//////////////     todo for below methods   - 1st round //////////////////////
     //todo//////////////////////////////////////////////////////////////////////////////
 
-
-
-    @Autowired
-    DctmRestClient restClient;
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * com.emc.documentum.delegates.FileManagerApi#createFolder(java.lang.
-	 * String, java.lang.String)
-	 */
-	@Override
-	public Item createFolder(String cabinetName, String folderName) throws DocumentumException {
-		JsonObject cabinet;
-		JsonObject folder;
-		try {
-			cabinet = restClient.getCabinet(cabinetName);
-			folder = restClient.createFolder(cabinet, folderName);
-			return convertJsonObject(folder);
-		} catch (ResourceAccessException e) {
-			throw new RepositoryNotAvailableException("CoreRest");
-		} catch (CabinetNotFoundException | FolderCreationException e) {
-			throw e;
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.emc.documentum.delegates.FileManagerApi#createDocument(com.emc.
-	 * documentum.dtos.DocumentCreation)
-	 */
-	@Override
-	public Item createDocument(DocumentCreation docCreation) throws DocumentumException {
-		JsonObject document;
-		JsonObject folder;
-		try {
-			folder = restClient.getObjectById(docCreation.getParentId());
-			document = restClient.createDocument(folder, docCreation.getProperties());
-			return convertJsonObject(document);
-		} catch (ResourceAccessException e) {
-			throw new RepositoryNotAvailableException("CoreRest");
-		} catch ( DocumentCreationException e) {
-			throw e;
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.emc.documentum.delegates.FileManagerApi#getCabinetByName(java.
-	 * lang.String)
-	 */
-	@Override
-	public Item getCabinetByName(String cabinetName) throws DocumentumException {
-
-		try {
-			return convertJsonObject(restClient.getCabinet(cabinetName));
-		} catch (ResourceAccessException e) {
-			throw new RepositoryNotAvailableException("CoreRest");
-		} catch (CabinetNotFoundException e) {
-			throw e;
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.emc.documentum.delegates.FileManagerApi#getObjectById(java.lang.
-	 * String)
-	 */
-	@Override
-	public Item getObjectById(String cabinetId)
-			throws DocumentumException {
-		try {
-			return convertJsonObject(restClient.getObjectById(cabinetId));
-		} catch (ResourceAccessException e) {
-			throw new RepositoryNotAvailableException("CoreRest");
-		} catch (Exception e) {
-			// TODO Object Not Found Exception
-			throw new CabinetNotFoundException(cabinetId);
-		}
-	}
-
-	@Override
-	public Collection getDocumentByName(String name) throws DocumentumException {
-		try {
-			return convertCoreRSEntryList(restClient.getDocumentByName(name));
-		} catch (ResourceAccessException e) {
-			throw new RepositoryNotAvailableException("CoreRest");
-		} catch (DocumentNotFoundException e) {
-			return new Collection();
-		}
-
-	}
-
-	@Override
-	public Item checkoutDocument(String documentId)
-			throws DocumentumException {
-		try {
-			return convertJsonObject(restClient.checkOutDocument(documentId));
-		} catch (ResourceAccessException e) {
-			throw new RepositoryNotAvailableException("CoreRest");
-		}
+    @Override public Item createDocument(NewDocumentRequest docCreation) throws DocumentumException {
+        return null;
     }
 
-	@Override
-	public Item checkinDocument(String documentId, byte[] content)
-			throws DocumentumException {
-		try {
-			return convertJsonObject(restClient.checkinDocument(documentId, content));
-		} catch (ResourceAccessException e) {
-			throw new RepositoryNotAvailableException("CoreRest");
-		}
-	}
+    @Override public Item getCabinetByName(String cabinetName) throws DocumentumException {
+        return null;
+    }
 
-	@Override
-	public Collection getPaginatedResult(String folderId, int startIndex, int pageSize)
-			throws RepositoryNotAvailableException {
-		try {
-			return convertCoreRSEntryList(
-                    restClient.getPaginatedResult(folderId, startIndex, pageSize));
-		} catch (ResourceAccessException e) {
-			throw new RepositoryNotAvailableException("CoreRest");
-		}
-	}
-	
-	@Override
-	public Item cancelCheckout(String documentId) throws DocumentumException {
-		try {
-			return convertJsonObject(restClient.cancelCheckout(documentId));
-		} catch (ResourceAccessException e) {
-			throw new RepositoryNotAvailableException("CoreRest");
-		}
-	}
+    @Override public Item getObjectById(String cabinetId) throws DocumentumException {
+        return null;
+    }
 
-	@Override
-	public Item createFolder(String parentId, HashMap<String, Object> properties)
-			throws FolderCreationException, RepositoryNotAvailableException, DocumentumException {
-		throw new UnsupportedOperationException();
-	}
+    @Override public Item createFolder(String cabinetName, String folderName) throws DocumentumException {
+        return null;
+    }
+
+    @Override public Collection getPaginatedResult(String folderId, int startIndex, int pageSize)
+            throws DocumentumException {
+        return null;
+    }
+
+    @Override public Collection getDocumentByName(String name) throws DocumentumException {
+        return null;
+    }
+
+    @Override public Item cancelCheckout(String documentId) throws DocumentumException {
+        return null;
+    }
+
+    @Override public Item checkoutDocument(String documentId) throws DocumentumException {
+        return null;
+    }
+
+    @Override public Item checkinDocument(String documentId, byte[] content) throws DocumentumException {
+        return null;
+    }
+
+    @Override public Item createFolder(String parentId, HashMap<String, Object> properties) throws DocumentumException {
+        return null;
+    }
 }

@@ -1,8 +1,8 @@
-package com.emc.documentum.filemanager.dtos;
+package com.emc.documentum.filemanager.dtos.in;
 
 import java.util.HashMap;
 
-public class DocumentCreation {
+public class NewDocumentRequest {
 
 	private String parentId;
 
@@ -26,7 +26,7 @@ public class DocumentCreation {
 
 	@Override
 	public String toString() {
-		return "DocumentCreation [parentId=" + parentId + ", properties=" + properties + "]";
+		return "NewDocumentRequest [parentId=" + parentId + ", properties=" + properties + "]";
 	}
 
 }

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @PropertySource("classpath:application.properties")
-public class DCCoreRestConstants {
+public class AppRuntime {
 
 	@Value("${documentum.corerest.host}")
 	public  String host;

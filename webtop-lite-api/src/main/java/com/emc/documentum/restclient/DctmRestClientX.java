@@ -19,7 +19,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriUtils;
 
-import com.emc.documentum.constants.DCCoreRestConstants;
+import com.emc.documentum.constants.AppRuntime;
+import com.emc.documentum.constants.DocumentumProperties;
 import com.emc.documentum.constants.LinkRelation;
 import com.emc.documentum.restclient.model.ByteArrayResource;
 import com.emc.documentum.restclient.model.HrefObject;
@@ -27,6 +28,7 @@ import com.emc.documentum.restclient.model.JsonEntry;
 import com.emc.documentum.restclient.model.JsonFeed;
 import com.emc.documentum.restclient.model.JsonObject;
 import com.emc.documentum.restclient.model.PlainRestObject;
+import com.emc.documentum.restclient.util.QueryParams;
 
 @Component("DctmRestClientX")
 @PropertySource("classpath:application.properties")
@@ -38,7 +40,7 @@ public class DctmRestClientX implements InitializingBean{
     public static final String DQL_QUERY_CABINET_BY_PATH = "select %s from dm_cabinet where object_name='%s'";
 
     @Autowired
-    DCCoreRestConstants data;
+    AppRuntime data;
 
     protected DctmRestTemplate restTemplate;
     protected DctmRestTemplate streamingTemplate;
@@ -60,17 +62,21 @@ public class DctmRestClientX implements InitializingBean{
         String childFoldersUrl = parentFolder.getHref(LinkRelation.FOLDERS);
 
         ResponseEntity<JsonObject> result = restTemplate.post(childFoldersUrl,
-                new PlainRestObject("dm_folder", Collections.<String, Object>singletonMap("object_name", folderName)),
+                new PlainRestObject("dm_folder", singleProperty(DocumentumProperties.OBJECT_NAME, folderName)),
                 JsonObject.class,
-                "view", DEFAULT_VIEW);
+                QueryParams.VIEW, DEFAULT_VIEW);
         return result.getBody();
+    }
+
+    private Map<String, Object> singleProperty(String property, String value) {
+        return Collections.<String, Object>singletonMap(property, value);
     }
 
     public JsonObject update(JsonObject object, Map<String, Object> newProperties) {
         ResponseEntity<JsonObject> result = restTemplate.post(object.getHref(LinkRelation.SELF),
                 new PlainRestObject(null, newProperties),
                 JsonObject.class,
-                "view", DEFAULT_VIEW);
+                QueryParams.VIEW, DEFAULT_VIEW);
         return result.getBody();
     }
 
@@ -78,7 +84,7 @@ public class DctmRestClientX implements InitializingBean{
         ResponseEntity<JsonObject> result = restTemplate.post(targetFolder.getHref(LinkRelation.OBJECTS),
                 new HrefObject(object.getHref(LinkRelation.EDIT)),
                 JsonObject.class,
-                "view", DEFAULT_VIEW);
+                QueryParams.VIEW, DEFAULT_VIEW);
         return result.getBody();
     }
 
@@ -86,7 +92,8 @@ public class DctmRestClientX implements InitializingBean{
         JsonFeed parentLinks = restTemplate.get(
                 object.getHref(LinkRelation.PARENT_LINKS),
                 JsonFeed.class,
-                "inline", "false").getBody();
+                QueryParams.INLINE, "false")
+                .getBody();
         String parentLinkUrl = parentLinks.getEntries().get(0).getContentSrc();
         ResponseEntity<JsonObject> result = restTemplate.put(
                 parentLinkUrl,
@@ -98,16 +105,16 @@ public class DctmRestClientX implements InitializingBean{
     public void deleteObjectById(String id, boolean recursive) {
         JsonObject object = querySingleObjectById(id);
         restTemplate.delete(object.getHref(LinkRelation.SELF),
-                "delete-non-empty", String.valueOf(recursive),
-                "delete-all-links", String.valueOf(recursive),
-                "delete-version", "all");
+                QueryParams.DELETE_NON_EMPTY, String.valueOf(recursive),
+                QueryParams.DELETE_ALL_LINKS, String.valueOf(recursive),
+                QueryParams.DELETE_ALL_VERSIONS, "all");
     }
 
     public JsonObject getObjectById(String id) {
         JsonObject object = querySingleObjectById(id);
         ResponseEntity<JsonObject> result = restTemplate.get(object.getHref(LinkRelation.SELF),
                 JsonObject.class,
-                "view", DEFAULT_VIEW);
+                QueryParams.VIEW, DEFAULT_VIEW);
         return result.getBody();
     }
 
@@ -115,7 +122,7 @@ public class DctmRestClientX implements InitializingBean{
         JsonObject object = querySingleObjectByPath(path);
         ResponseEntity<JsonObject> result = restTemplate.get(object.getHref(LinkRelation.SELF),
                 JsonObject.class,
-                "view", DEFAULT_VIEW);
+                QueryParams.VIEW, DEFAULT_VIEW);
         return result.getBody();
     }
 
@@ -124,20 +131,20 @@ public class DctmRestClientX implements InitializingBean{
         JsonObject contentMeta = restTemplate.get(
                 object.getHref(LinkRelation.PRIMARY_CONTENT),
                 JsonObject.class,
-                "media-url-policy", "local")
+                QueryParams.MEDIA_URL_POLICY, "local")
             .getBody();
         ResponseEntity<byte[]> content = streamingTemplate.get(contentMeta.getHref(LinkRelation.CONTENT_MEDIA), byte[].class);
         return new ByteArrayResource(
                 content.getBody(),
-                (String) contentMeta.getPropertyByName("object_name"),
-                (String) contentMeta.getPropertyByName("dos_extension"),
+                (String) contentMeta.getPropertyByName(DocumentumProperties.OBJECT_NAME),
+                (String) contentMeta.getPropertyByName(DocumentumProperties.DOS_EXTENSION),
                 content.getHeaders().getContentType(),
                 content.getHeaders().getContentLength());
     }
 
     public JsonObject createContentfulDocument(JsonObject folder, byte[] data, String filename, String mime) {
         PlainRestObject doc = new PlainRestObject("dm_document",
-                Collections.<String, Object>singletonMap("object_name", filename));
+                singleProperty(DocumentumProperties.OBJECT_NAME, filename));
         MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
         MultiValueMap<String, String> partHeaders1 = new LinkedMultiValueMap<>();
         partHeaders1.set("Content-Type", DctmRestTemplate.DCTM_VND_JSON_TYPE.toString());
@@ -174,7 +181,7 @@ public class DctmRestClientX implements InitializingBean{
         String dqlUrl = repository.getHref(LinkRelation.DQL);
         ResponseEntity<JsonFeed> response =
                 restTemplate.get(dqlUrl, JsonFeed.class,
-                        "dql", constructDqlParam(dql));
+                        QueryParams.DQL, constructDqlParam(dql));
         List<JsonEntry> entries = response.getBody().getEntries();
         if (entries == null || entries.size() == 0)
             throw new RuntimeException("No object for dql: " + dql);
@@ -195,10 +202,10 @@ public class DctmRestClientX implements InitializingBean{
     private List<JsonEntry> getJsonEntriesByUrl(int pageNumber, int pageSize, String childrenUrl) {
         ResponseEntity<JsonFeed> response =
                 restTemplate.get(childrenUrl, JsonFeed.class,
-                        "inline", "true",
-                        "view", DEFAULT_VIEW,
-                        "page", String.valueOf(pageNumber),
-                        "items-per-page", String.valueOf(pageSize));
+                        QueryParams.INLINE, "true",
+                        QueryParams.VIEW, DEFAULT_VIEW,
+                        QueryParams.PAGE, String.valueOf(pageNumber),
+                        QueryParams.ITEMS_PER_PAGE, String.valueOf(pageSize));
         return response.getBody().getEntries();
     }
 
@@ -213,7 +220,8 @@ public class DctmRestClientX implements InitializingBean{
         String repositoriesUri = (String) repositoriesEntry.get("href");
 
         // get repositories
-        ResponseEntity<JsonFeed> repositories = restTemplate.get(repositoriesUri, JsonFeed.class, "inline", "true");
+        ResponseEntity<JsonFeed> repositories = restTemplate
+                .get(repositoriesUri, JsonFeed.class, QueryParams.INLINE, "true");
         for(JsonEntry repo : repositories.getBody().getEntries()) {
             if (data.repo.equals(repo.getTitle())) {
                 repository = repo.getContentObject();
