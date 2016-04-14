@@ -16,6 +16,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.ResourceHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -25,7 +30,7 @@ import com.emc.documentum.restclient.util.AuthorizedRequestFactory;
 
 public class DctmRestTemplate {
     private static final Log LOGGER = LogFactory.getLog(DctmRestTemplate.class);
-    private static final MediaType DCTM_VND_JSON_TYPE = MediaType.parseMediaType("application/vnd.emc.documentum+json");
+    public static final MediaType DCTM_VND_JSON_TYPE = MediaType.parseMediaType("application/vnd.emc.documentum+json");
 
     protected RestTemplate restTemplate;
     protected HttpHeaders defaultHeaders;
@@ -34,7 +39,7 @@ public class DctmRestTemplate {
         String usernameAndPassword = String.format("%s:%s", loginName, password);
         String auth = String.format("Basic %s", new String(Base64.encodeBase64(usernameAndPassword.getBytes())));
         this.restTemplate = newRestTemplate(auth, streaming);
-        this.defaultHeaders = defaultHttpHeaders();
+        this.defaultHeaders = defaultHttpHeaders(null);
     }
 
     public <T> ResponseEntity<T> get(String uri, Class<T> responseBodyClass, String... params) {
@@ -61,21 +66,26 @@ public class DctmRestTemplate {
             String... params) {
 
         MultiValueMap<String, String> paramMap = buildParams(params);
-        String requestUri = url;
-        requestUri = UriComponentsBuilder.fromHttpUrl(requestUri).queryParams(paramMap).build(true).toUriString();
-        RequestEntity<R> request = new RequestEntity<>(requestBody, defaultHttpHeaders(), httpMethod, URI.create(requestUri));
+        String requestUri = UriComponentsBuilder.fromHttpUrl(url).queryParams(paramMap).build(true).toUriString();
+        RequestEntity<R> request = new RequestEntity<>(requestBody, defaultHttpHeaders(requestBody), httpMethod,
+                URI.create(requestUri));
 
-        logRequest(requestUri, httpMethod, defaultHttpHeaders());
+        logRequest(requestUri, httpMethod, defaultHttpHeaders(requestBody));
         org.springframework.http.ResponseEntity<T> response = restTemplate.exchange(request, responseBodyClass);
         logResponse(response.getStatusCode(), response.getHeaders());
 
         return response;
     }
 
-    protected HttpHeaders defaultHttpHeaders() {
+    protected HttpHeaders defaultHttpHeaders(Object requestBody) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(DCTM_VND_JSON_TYPE, MediaType.APPLICATION_JSON));
-        headers.setContentType(DCTM_VND_JSON_TYPE);
+        if (requestBody instanceof MultiValueMap) {
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        } else {
+            headers.setContentType(DCTM_VND_JSON_TYPE);
+        }
+
         return headers;
     }
 
@@ -109,6 +119,23 @@ public class DctmRestTemplate {
             factory.setAuthorization(authorization);
         }
         factory.setBufferRequestBody(!streaming);
-        return new RestTemplate(factory);
+        RestTemplate template = new RestTemplate(factory);
+        setMessageConverters(template);
+        return template;
+    }
+
+    public void setMessageConverters(RestTemplate template) {
+        HttpMessageConverter<?> jackson = new MappingJackson2HttpMessageConverter();
+        HttpMessageConverter<?> resource = new ResourceHttpMessageConverter();
+        HttpMessageConverter<?> bytearray = new ByteArrayHttpMessageConverter();
+        FormHttpMessageConverter form = new FormHttpMessageConverter();
+        form.addPartConverter(jackson);
+
+        template.setMessageConverters(Arrays.asList(
+                form,
+                jackson,
+                resource,
+                bytearray
+        ));
     }
 }

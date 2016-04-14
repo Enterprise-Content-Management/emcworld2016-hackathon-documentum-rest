@@ -1,5 +1,9 @@
 package com.emc.documentum.filemanager.controller;
 
+import java.util.Iterator;
+import javax.servlet.http.Part;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +17,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.emc.documentum.exceptions.DocumentumException;
 import com.emc.documentum.exceptions.RepositoryNotAvailableException;
 import com.emc.documentum.filemanager.api.FileManagerApi;
+import com.emc.documentum.filemanager.dtos.in.CopyMoveObjectsRequest;
 import com.emc.documentum.filemanager.dtos.in.DeleteObjectsRequest;
 import com.emc.documentum.filemanager.dtos.in.ListObjectsRequest;
-import com.emc.documentum.filemanager.dtos.in.CopyMoveObjectsRequest;
 import com.emc.documentum.filemanager.dtos.in.NewFolderRequest;
 import com.emc.documentum.filemanager.dtos.in.RenameObjectRequest;
 import com.emc.documentum.filemanager.dtos.out.Collection;
@@ -29,6 +34,7 @@ import com.google.common.base.Strings;
 
 @CrossOrigin
 @RestController
+@RequestMapping("/api")
 public class FileManagerController extends BaseController {
 
 	private static final  Log LOGGER = LogFactory.getLog(FileManagerController.class);
@@ -36,7 +42,7 @@ public class FileManagerController extends BaseController {
     @Autowired
     FileManagerApi fileManagerApi;
 
-	@RequestMapping(value = "/api/listUrl",
+    @RequestMapping(value = "/listUrl",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -55,7 +61,7 @@ public class FileManagerController extends BaseController {
         return result;
 	}
 
-	@RequestMapping(value = "/api/createFolderUrl",
+    @RequestMapping(value = "/createFolderUrl",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -64,7 +70,7 @@ public class FileManagerController extends BaseController {
         return commonResponse();
 	}
 
-    @RequestMapping(value = "/api/renameUrl",
+    @RequestMapping(value = "/renameUrl",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -73,7 +79,7 @@ public class FileManagerController extends BaseController {
         return commonResponse();
     }
 
-    @RequestMapping(value = "/api/moveUrl",
+    @RequestMapping(value = "/moveUrl",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -85,7 +91,7 @@ public class FileManagerController extends BaseController {
         return commonResponse();
     }
 
-    @RequestMapping(value = "/api/copyUrl", method = RequestMethod.POST)
+    @RequestMapping(value = "/copyUrl", method = RequestMethod.POST)
     public String copyUrl(@RequestBody CopyMoveObjectsRequest request) throws DocumentumException {
         for (String id : request.getItems()) {
             fileManagerApi.copyObject(id, request.getNewPath());
@@ -93,7 +99,7 @@ public class FileManagerController extends BaseController {
         return commonResponse();
     }
 
-    @RequestMapping(value = "/api/deleteFolderUrl",
+    @RequestMapping(value = "/deleteFolderUrl",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -105,7 +111,7 @@ public class FileManagerController extends BaseController {
         return commonResponse();
     }
 
-    @RequestMapping(value= "/api/document/content/{documentId}",
+    @RequestMapping(value = "/document/content/{documentId}",
             method = RequestMethod.GET)
     public ResponseEntity<byte[]> getDocumentContentById(@PathVariable(value="documentId")String documentId)
             throws DocumentumException {
@@ -121,7 +127,7 @@ public class FileManagerController extends BaseController {
                 HttpStatus.OK);
     }
 
-    @RequestMapping(value= "/api/document/open/{documentId}",
+    @RequestMapping(value = "/document/open/{documentId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Data openDocumentById(@PathVariable(value="documentId")String documentId)
@@ -130,13 +136,37 @@ public class FileManagerController extends BaseController {
         return new Data(content.getData());
     }
 
+    @RequestMapping(value = "/uploadUrl",
+            method = RequestMethod.POST,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String uploadUrl(MultipartHttpServletRequest request) throws DocumentumException {
+        try {
+            String targetFolderPath = null;
+            Iterator<Part> parts = request.getParts().iterator();
+            while (parts.hasNext()) {
+                Part next = parts.next();
+                if ("destination".equals(next.getName())) {
+                    targetFolderPath = IOUtils.toString(next.getInputStream());
+                } else {
+                    String filename = next.getSubmittedFileName();
+                    String mime = next.getContentType();
+                    fileManagerApi.uploadContent(targetFolderPath, next.getInputStream(), filename, mime);
+                }
+            }
+            return commonResponse();
+        } catch (Exception e) {
+            throw new DocumentumException("Fail to receive multipart file upload.", e);
+        }
+    }
+
+
     //todo//////////////////////////////////////////////////////////////////////////////
     //todo////////////// above methods are refactored - 1st round //////////////////////
     //todo//////////////     todo for below methods   - 1st round //////////////////////
     //todo//////////////////////////////////////////////////////////////////////////////
 
-
-    @RequestMapping(value= "/api/FOLDERS/content/{folderId}/startIndex/pageSize")
+    @RequestMapping(value = "/FOLDERS/content/{folderId}/startIndex/pageSize")
     public Collection paginationService(@PathVariable(value="folderId")String folderId , @PathVariable(value="startIndex")String startIndex , @PathVariable(value="pageSize")String pageSize)
             throws DocumentumException {
         //TODO to be implemented
@@ -151,23 +181,18 @@ public class FileManagerController extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/api/editUrl", method = RequestMethod.POST)
+    @RequestMapping(value = "/editUrl", method = RequestMethod.POST)
     public String editUrl() {
         return commonResponse();
     }
 
-	@RequestMapping(value = "/api/permissionsUrl", method = RequestMethod.POST)
-	public String permissionsUrl() {
+    @RequestMapping(value = "/permissionsUrl", method = RequestMethod.POST)
+    public String permissionsUrl() {
 		return commonResponse();
 	}
 
-	@RequestMapping(value = "/api/extractUrl", method = RequestMethod.POST)
-	public String extractUrl() {
-		return commonResponse();
-	}
-
-	@RequestMapping(value = "/api/uploadUrl", method = RequestMethod.POST)
-	public String uploadUrl() {
+    @RequestMapping(value = "/extractUrl", method = RequestMethod.POST)
+    public String extractUrl() {
 		return commonResponse();
 	}
 }

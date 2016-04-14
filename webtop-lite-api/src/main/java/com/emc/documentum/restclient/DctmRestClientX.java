@@ -12,8 +12,11 @@ import java.util.Map;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriUtils;
 
 import com.emc.documentum.constants.DCCoreRestConstants;
@@ -130,6 +133,24 @@ public class DctmRestClientX implements InitializingBean{
                 (String) contentMeta.getPropertyByName("dos_extension"),
                 content.getHeaders().getContentType(),
                 content.getHeaders().getContentLength());
+    }
+
+    public JsonObject createContentfulDocument(JsonObject folder, byte[] data, String filename, String mime) {
+        PlainRestObject doc = new PlainRestObject("dm_document",
+                Collections.<String, Object>singletonMap("object_name", filename));
+        MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> partHeaders1 = new LinkedMultiValueMap<>();
+        partHeaders1.set("Content-Type", DctmRestTemplate.DCTM_VND_JSON_TYPE.toString());
+        parts.add("metadata", new HttpEntity<>(doc, partHeaders1));
+
+        MultiValueMap<String, String> partHeaders2 = new LinkedMultiValueMap<>();
+        partHeaders2.set("Content-Type", mime);
+        parts.add("binary", new HttpEntity<>(data, partHeaders2));
+
+        ResponseEntity<JsonObject> result = streamingTemplate.post(folder.getHref(LinkRelation.DOCUMENTS),
+                parts,
+                JsonObject.class);
+        return result.getBody();
     }
 
     private JsonObject querySingleObjectById(String id) {

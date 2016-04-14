@@ -1,5 +1,6 @@
 package com.emc.documentum.filemanager.api;
 
+import java.io.InputStream;
 import java.util.HashMap;
 
 import com.emc.documentum.exceptions.DocumentumException;
@@ -44,5 +45,8 @@ public interface FileManagerApi {
 
     void deleteObjectById(String objectId, boolean deleteChildrenOrNot) throws DocumentumException ;
 
-    Item createFolder(String parentId, HashMap<String, Object> properties) throws DocumentumException;;
+    Item createFolder(String parentId, HashMap<String, Object> properties) throws DocumentumException;
+
+    Item uploadContent(String targetFolderPath, InputStream inputStream, String filename, String mime)
+            throws DocumentumException;
 }

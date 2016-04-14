@@ -12,8 +12,8 @@ public class LinkRelation {
     public static final String PARENT_LINKS = "http://identifiers.emc.com/linkrel/parent-links";
     public static final String PRIMARY_CONTENT = "http://identifiers.emc.com/linkrel/primary-content";
     public static final String CONTENT_MEDIA = "http://identifiers.emc.com/linkrel/content-media";
+    public static final String DOCUMENTS = "http://identifiers.emc.com/linkrel/documents";
 
-	public static final String document = "http://identifiers.emc.com/linkrel/documents";
 	public static final String enclosure = "enclosure";
 	public static final String checkOutDocument = "http://identifiers.emc.com/linkrel/checkout";
 	public static final String checkInNextMajor = "http://identifiers.emc.com/linkrel/checkin-next-major";

@@ -133,8 +133,8 @@ public class DctmRestClient {
 	public JsonObject createDocument(JsonObject parent, HashMap<String, Object> properties)
 			throws DocumentCreationException {
 		RestTemplate restTemplate = new RestTemplate();
-		String folderUri = parent.getHref(LinkRelation.document);
-		Properties creationProperties = new Properties();
+        String folderUri = parent.getHref(LinkRelation.DOCUMENTS);
+        Properties creationProperties = new Properties();
 		creationProperties.setProperties(properties);
 		HttpHeaders httpHeader = createHeaders(data.username, data.password);
 		httpHeader.add("Content-Type", "application/vnd.emc.documentum+json");
@@ -323,8 +323,8 @@ public class DctmRestClient {
 		JsonObject document = getObjectById(documentId);
 		JsonLink link = getLink(document.getLinks(), LinkRelation.checkOutDocument);
 		if (link == null) {
-			throw new DocumentCheckoutException("document already checked out");
-		}
+            throw new DocumentCheckoutException("DOCUMENTS already checked out");
+        }
 		RestTemplate restTemplate = new RestTemplate();
 		List<MediaType> mediaTypes = new ArrayList<MediaType>();
 		mediaTypes.add(MediaType.ALL);

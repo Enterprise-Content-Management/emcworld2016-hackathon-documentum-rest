@@ -1,8 +1,11 @@
 package com.emc.documentum.filemanager.api;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
@@ -89,6 +92,17 @@ public class FileManagerApiImpl implements FileManagerApi {
         return restClientX.getContentById(documentId);
     }
 
+    @Override
+    public Item uploadContent(String targetFolderPath, InputStream inputStream, String filename, String mime)
+            throws DocumentumException {
+        try {
+            JsonObject folder = restClientX.getObjectByPath(targetFolderPath);
+            byte[] data = IOUtils.toByteArray(inputStream);
+            return convertJsonObject(restClientX.createContentfulDocument(folder, data, filename, mime));
+        } catch (IOException e) {
+            throw new DocumentumException("Fail to read input stream.", e);
+        }
+    }
 
 
     //todo//////////////////////////////////////////////////////////////////////////////
@@ -241,5 +255,4 @@ public class FileManagerApiImpl implements FileManagerApi {
 			throws FolderCreationException, RepositoryNotAvailableException, DocumentumException {
 		throw new UnsupportedOperationException();
 	}
-
 }
