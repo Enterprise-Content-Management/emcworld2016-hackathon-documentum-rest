@@ -28,6 +28,8 @@ The following guide describes how to setup your Webtop Lite Single Page Applicat
 * Modify the constant value `SPRING_API` in the [Config.js](https://github.com/Enterprise-Content-Management/emcworld2016-hackathon-documentum-rest/blob/master/webtop-lite-ui/src/app/filemanager/providers/config.js) file. Change its value to the root URL of your Webtop Lite API Server, e.g. `http://localhost:8080/webtop-lite-api-0.0.1-SNAPSHOT`
 
 #### Build and Run
+* If you don't have [NodeJS](https://nodejs.org/) installed yet, download and install it.
+* If you don't have [Git](https://git-scm.com/) installed yet, download and install it.
 * If you don't have [bower](http://bower.io/) installed yet, run below CLI command to install it:
 ``` 
 npm install -g bower
