@@ -17,7 +17,7 @@ The following guide describes how to setup your Webtop Lite Single Page Applicat
 >   git clone git@github.com:Enterprise-Content-Management/emcworld2016-hackathon-documentum-rest.git/webtop-lite-api
       
 * Check the [README.md](https://github.com/Enterprise-Content-Management/emcworld2016-hackathon-documentum-rest/blob/master/webtop-lite-api/README.md) file for detailed instructions of running the Webtop Lite API Server
-* Assumed that your Webtop Lite API Server is started up and has the root URL as `http://localhost:8080/webtop-lite-api-0.0.1-SNAPSHOT` 
+* Assumed that your Webtop Lite API Server is started up and has the root URL as `http://localhost:7000` 
 
 #### Setup Project
 
@@ -25,7 +25,7 @@ The following guide describes how to setup your Webtop Lite Single Page Applicat
 >  git clone git@github.com:Enterprise-Content-Management/emcworld2016-hackathon-documentum-rest.git/webtop-lite-ui
 
 * Navigate to the project directory in your local copy
-* Modify the constant value `SPRING_API` in the [Config.js](https://github.com/Enterprise-Content-Management/emcworld2016-hackathon-documentum-rest/blob/master/webtop-lite-ui/src/app/filemanager/providers/config.js) file. Change its value to the root URL of your Webtop Lite API Server, e.g. `http://localhost:8080/webtop-lite-api-0.0.1-SNAPSHOT`
+* Modify the constant value `SPRING_API` in the [Config.js](https://github.com/Enterprise-Content-Management/emcworld2016-hackathon-documentum-rest/blob/master/webtop-lite-ui/src/app/filemanager/providers/config.js) file. Change its value to the root URL of your Webtop Lite API Server, e.g. `http://localhost:7000`
 
 #### Build and Run
 * If you don't have [NodeJS](https://nodejs.org/) installed yet, download and install it.

@@ -35,6 +35,13 @@ import com.google.common.base.Strings;
 @RequestMapping("/api")
 public class FileManagerController extends BaseController {
 
+    @RequestMapping(value = "/test",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Collection testUrl() throws DocumentumException {
+        return fileManagerApi.getAllCabinets(1, 5);
+    }
+
     @Autowired
     FileManagerApi fileManagerApi;
 

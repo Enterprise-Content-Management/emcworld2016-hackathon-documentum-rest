@@ -1,7 +1,7 @@
 (function(angular) {
     'use strict';
     angular.module('FileManager')
-    .constant('SPRING_API', 'http://localhost:8000/webtop-lite-api-0.0.1-SNAPSHOT')
+    .constant('SPRING_API', 'http://localhost:7000')
     .provider('fileManagerConfig', function(SPRING_API) {
 
         var values = {
