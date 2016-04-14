@@ -6,10 +6,13 @@ package com.emc.documentum.restclient.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * the plain RestObject implementation which has properties only
  * normally used when create/update the RestObject
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PlainRestObject extends JsonObject {
 	private final String type;
 	private final HashMap<String, Object> properties;
