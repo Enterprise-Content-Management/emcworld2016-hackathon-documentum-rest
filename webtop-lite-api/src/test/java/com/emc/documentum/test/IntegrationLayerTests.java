@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.emc.documentum.WebtopLiteApiApplication;
-import com.emc.documentum.dtos.DocumentumFolder;
+import com.emc.documentum.filemanager.dtos.DocumentumFolder;
 
 /**
  * Unit Tests for Integration Layer
@@ -79,7 +79,7 @@ public abstract class IntegrationLayerTests {
 
 	private ResponseEntity<DocumentumFolder> createFolder(String cabinetName, String folderName) {
 		ResponseEntity<DocumentumFolder> entity = new TestRestTemplate().exchange("http://localhost:" + this.port
-				+ "/" + getAPI() + "/services/folder/create/" + cabinetName + "/" + folderName,HttpMethod.POST,null, DocumentumFolder.class);
+				+ "/" + getAPI() + "/services/FOLDERS/create/" + cabinetName + "/" + folderName,HttpMethod.POST,null, DocumentumFolder.class);
 		return entity;
 	}
 

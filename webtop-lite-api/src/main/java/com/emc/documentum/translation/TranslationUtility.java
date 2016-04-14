@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.emc.documentum.dtos.DocumentumObject;
-import com.emc.documentum.dtos.DocumentumProperty;
+import com.emc.documentum.filemanager.dtos.DocumentumObject;
+import com.emc.documentum.filemanager.dtos.DocumentumProperty;
 
 @Component
 public class TranslationUtility {
