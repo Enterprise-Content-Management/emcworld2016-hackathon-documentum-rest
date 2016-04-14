@@ -43,16 +43,29 @@ public class FileManagerController extends BaseController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Collection listURL(@RequestBody ListObjectsRequest request) throws DocumentumException {
-        //todo: pagination params
         Collection result = null;
         String path = request.getParam("path");
+        Integer pageNumber = 1;
+        Integer pageSize = 20;
+        try{
+        	pageNumber = Integer.parseInt(request.getParam("pageNumber"));
+        }catch(NumberFormatException e){
+        	
+        }
+        
+        try{
+        	pageSize = Integer.parseInt(request.getParam("pageSize"));
+        }catch(NumberFormatException e){
+        	
+        }
+        
         if (Strings.isNullOrEmpty(path) || "/".equals(path)) {
             LOGGER.debug("Getting cabinets");
-            result = fileManagerApi.getAllCabinets(1, 20) ;
+            result = fileManagerApi.getAllCabinets(pageNumber, pageSize) ;
         }
         else {
             LOGGER.debug("getting children for PATH : " + path);
-            result = fileManagerApi.getChildren(path, 1, 20);
+            result = fileManagerApi.getChildren(path, pageNumber, pageSize);
         }
         return result;
 	}

@@ -13,6 +13,8 @@
             this.history = [];
             this.error = '';
             this.folderId = '' ;
+			this.pageNumber = 1;
+			this.pageSize = 10;
         };
 
         FileNavigator.prototype.deferredHandler = function(data, deferred, defaultMsg) {
@@ -44,7 +46,9 @@
                 onlyFolders: false,
                 path: '/' + path ,
                 //added
-                folderId: this.folderId
+                folderId: this.folderId,
+				pageNumber: this.pageNumber,
+				pageSize: this.pageSize
             }};
 
             self.requesting = true;
@@ -111,6 +115,7 @@
             }
 
             !this.history.length && this.history.push({name: '', nodes: []});
+            console.log(this.history[0]);
             flatten(this.history[0], flatNodes);
             selectedNode = findNode(flatNodes, path);
             selectedNode.nodes = [];
@@ -128,6 +133,7 @@
                 this.currentPath = item.model.fullPath().split('/').splice(1);
                 //added
                 this.folderId = item.model.id;
+				this.pageNumber = 1;
             }
             this.refresh();
         };
@@ -143,6 +149,41 @@
             this.currentPath = this.currentPath.slice(0, index + 1);
             this.refresh();
         };
+		
+        FileNavigator.prototype.hasPrevious = function(){
+            console.log(this.pageNumber > 1)
+            return this.pageNumber > 1;
+        }
+
+        FileNavigator.prototype.hasNext = function(){
+            return !(this.fileList.length == 0 || this.fileList.length < this.pageSize);
+        }
+
+		FileNavigator.prototype.nextPage = function (){
+			console.log("Getting Next Page");
+			if(!this.hasNext()){
+                console.log("No More Pages");
+                return;
+            }
+			this.pageNumber++;
+			this.getPage(this.pageNumber);
+		}
+		
+		FileNavigator.prototype.previousPage = function(){
+			console.log("Getting Previous Page");
+			if(!this.hasPrevious()){
+				console.log("No Previous Pages");
+				return;
+			}
+			this.pageNumber--;
+			this.getPage(this.pageNumber);
+			
+		}
+		
+		FileNavigator.prototype.getPage = function(pageNumber){
+			console.log("Getting Page number" + pageNumber);
+			this.refresh();
+		}
 
         FileNavigator.prototype.fileNameExists = function(fileName) {
             for (var item in this.fileList) {

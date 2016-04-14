@@ -356,3 +356,13 @@ table th > a:focus {
 .selected-file-details {
   padding-left: 20px;
 }
+
+.customPager{
+  display: inline;
+  float:right;
+  margin:0;
+}
+
+.customPager li a{
+  padding:0 14px;
+}
