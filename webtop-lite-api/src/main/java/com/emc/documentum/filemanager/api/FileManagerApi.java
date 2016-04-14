@@ -16,6 +16,8 @@ public interface FileManagerApi {
 
     Item moveObject(String id, String newParentPath) throws DocumentumException;
 
+    Item copyObject(String id, String newParentPath) throws DocumentumException;
+
     Item createDocument(DocumentCreation docCreation) throws DocumentumException;
 
     Item getCabinetByName(String cabinetName) throws DocumentumException;
@@ -24,7 +26,7 @@ public interface FileManagerApi {
 
 	Collection getAllCabinets(int pageNumber, int pageSize) throws DocumentumException;
 
-	Collection getChildren(String folderId, int pageNumber, int pageSize) throws DocumentumException;
+    Collection getChildren(String path, int pageNumber, int pageSize) throws DocumentumException;
 
     Collection getPaginatedResult(String folderId , int startIndex , int pageSize) throws DocumentumException;
 

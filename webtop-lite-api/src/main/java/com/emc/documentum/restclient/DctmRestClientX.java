@@ -32,6 +32,7 @@ public class DctmRestClientX implements InitializingBean{
     public static final String DEFAULT_VIEW = "r_object_id,r_object_type,object_name,owner_name,r_creation_date,r_modify_date,r_content_size";
     public static final String DQL_QUERY_BY_ID = "select %s from dm_sysobject where r_object_id='%s'";
     public static final String DQL_QUERY_BY_PATH = "select %s from dm_sysobject where object_name='%s' and folder('%s')";
+    public static final String DQL_QUERY_CABINET_BY_PATH = "select %s from dm_cabinet where object_name='%s'";
 
     @Autowired
     DCCoreRestConstants data;
@@ -45,8 +46,8 @@ public class DctmRestClientX implements InitializingBean{
         return getJsonEntriesByUrl(pageNumber, pageSize, cabinetsUrl);
     }
 
-    public List<JsonEntry> getChildren(String folderId, int pageNumber, int pageSize) {
-        JsonObject folder = getObjectById(folderId);
+    public List<JsonEntry> getChildren(String path, int pageNumber, int pageSize) {
+        JsonObject folder = getObjectByPath(path);
         String childrenUrl = folder.getHref(LinkRelation.OBJECTS);
         return getJsonEntriesByUrl(pageNumber, pageSize, childrenUrl);
     }
@@ -70,11 +71,24 @@ public class DctmRestClientX implements InitializingBean{
         return result.getBody();
     }
 
-    public JsonObject move(JsonObject object, JsonObject targetObject) {
-        ResponseEntity<JsonObject> result = restTemplate.post(object.getHref(LinkRelation.PARENT_LINKS),
-                new HrefObject(targetObject.getHref(LinkRelation.SELF)),
+    public JsonObject copy(JsonObject object, JsonObject targetFolder) {
+        ResponseEntity<JsonObject> result = restTemplate.post(targetFolder.getHref(LinkRelation.OBJECTS),
+                new HrefObject(object.getHref(LinkRelation.EDIT)),
                 JsonObject.class,
                 "view", DEFAULT_VIEW);
+        return result.getBody();
+    }
+
+    public JsonObject move(JsonObject object, JsonObject targetObject) {
+        JsonFeed parentLinks = restTemplate.get(
+                object.getHref(LinkRelation.PARENT_LINKS),
+                JsonFeed.class,
+                "inline", "false").getBody();
+        String parentLinkUrl = parentLinks.getEntries().get(0).getContentSrc();
+        ResponseEntity<JsonObject> result = restTemplate.put(
+                parentLinkUrl,
+                new HrefObject(targetObject.getHref(LinkRelation.EDIT)),
+                JsonObject.class);
         return result.getBody();
     }
 
@@ -124,9 +138,14 @@ public class DctmRestClientX implements InitializingBean{
     }
 
     private JsonObject querySingleObjectByPath(String path) {
-        String parentPath = path.substring(0, path.lastIndexOf("/"));
-        String name = path.substring(path.lastIndexOf("/") + 1);
-        String dql = String.format(DQL_QUERY_BY_PATH, DEFAULT_VIEW, name, parentPath);
+        String dql = null;
+        if (path.lastIndexOf("/") == 0) {
+            dql = String.format(DQL_QUERY_CABINET_BY_PATH, DEFAULT_VIEW, path.substring(1));
+        } else {
+            String parentPath = path.substring(0, path.lastIndexOf("/"));
+            String name = path.substring(path.lastIndexOf("/") + 1);
+            dql = String.format(DQL_QUERY_BY_PATH, DEFAULT_VIEW, name, parentPath);
+        }
         return querySingleObject(dql);
     }
 

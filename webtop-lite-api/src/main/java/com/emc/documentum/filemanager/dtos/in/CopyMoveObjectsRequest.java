@@ -7,7 +7,7 @@ package com.emc.documentum.filemanager.dtos.in;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MoveObjectsRequest {
+public class CopyMoveObjectsRequest {
     private List<String> items;
     private String newPath;
 

@@ -31,9 +31,9 @@ public class FileManagerApiImpl implements FileManagerApi {
 	DctmRestClientX restClientX;
 
     @Override
-    public Collection getChildren(String folderId, int pageNumber, int pageSize)
+    public Collection getChildren(String path, int pageNumber, int pageSize)
             throws DocumentumException {
-        return convertCoreRSEntryList(restClientX.getChildren(folderId, pageNumber, pageSize));
+        return convertCoreRSEntryList(restClientX.getChildren(path, pageNumber, pageSize));
     }
 
     @Override
@@ -68,6 +68,16 @@ public class FileManagerApiImpl implements FileManagerApi {
         JsonObject object = restClientX.getObjectById(id);
         JsonObject targetFolder = restClientX.getObjectByPath(newParentPath);
         JsonObject updated = restClientX.move(
+                object,
+                targetFolder);
+        return convertJsonObject(updated);
+    }
+
+    @Override
+    public Item copyObject(String id, String newParentPath) throws DocumentumException {
+        JsonObject object = restClientX.getObjectById(id);
+        JsonObject targetFolder = restClientX.getObjectByPath(newParentPath);
+        JsonObject updated = restClientX.copy(
                 object,
                 targetFolder);
         return convertJsonObject(updated);

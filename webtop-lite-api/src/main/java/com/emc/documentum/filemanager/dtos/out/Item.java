@@ -13,7 +13,7 @@ public class Item {
     private String id;
     private String name;
     private String type;
-    private int size;
+    private Integer size;
     private String date;
     private String rights;
 
@@ -37,7 +37,7 @@ public class Item {
         setDate((String) object.getPropertyByName("r_modify_date"));
         setType(convertType(object.getType()));
         setId((String) object.getPropertyByName("r_object_id"));
-        setSize((int) object.getPropertyByName("r_content_size")) ;
+        setSize((Integer) object.getPropertyByName("r_content_size"));
         setRights("drwxr-xr-x") ;
     }
 
@@ -65,11 +65,11 @@ public class Item {
         this.type = type;
     }
 
-    public int getSize() {
+    public Integer getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(Integer size) {
         this.size = size;
     }
 
