@@ -119,7 +119,9 @@
             console.log(this.history[0]);
             flatten(this.history[0], flatNodes);
             selectedNode = findNode(flatNodes, path);
-            selectedNode.nodes = [];
+            if (selectedNode != null) {
+                selectedNode.nodes = [];
+            }
 
             for (var o in this.fileList) {
                 var item = this.fileList[o];
@@ -202,7 +204,12 @@
                 }
             }
         };
-
+            
+        FileNavigator.prototype.currentFullPath = function () {
+            var path = this.currentPath.join('/');
+            return '/' + path;
+        };
+            
         return FileNavigator;
     }]);
 })(angular);

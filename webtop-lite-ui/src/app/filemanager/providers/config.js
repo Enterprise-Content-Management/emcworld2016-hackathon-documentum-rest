@@ -22,6 +22,7 @@
             compressUrl: SPRING_API + '/api/compressUrl',
             extractUrl: SPRING_API + '/api/extractUrl',
             permissionsUrl: SPRING_API + '/api/permissionsUrl',
+            searchUrl: SPRING_API + '/api/searchUrl',
 
             searchForm: true,
             sidebar: true,
@@ -33,9 +34,9 @@
                 move:true,
                 edit: true,
                 changePermissions: true,
-                compress: true,
-                compressChooseName: true,
-                extract: true,
+                compress: false,
+                compressChooseName: false,
+                extract: false,
                 download: true,
                 preview: true,
                 remove: true

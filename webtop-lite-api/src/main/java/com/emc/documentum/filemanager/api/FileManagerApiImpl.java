@@ -106,6 +106,12 @@ public class FileManagerApiImpl implements FileManagerApi {
         }
     }
 
+    @Override
+    public Collection search(String terms, String path, int page, int itemsPerPage)
+            throws DocumentumException {
+        return convertCoreRSEntryList(restClientX.simpleSearch(terms, path, page, itemsPerPage));
+    }
+
 
     //todo//////////////////////////////////////////////////////////////////////////////
     //todo////////////// above methods are refactored - 1st round //////////////////////

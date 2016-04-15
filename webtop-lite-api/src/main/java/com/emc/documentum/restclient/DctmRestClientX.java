@@ -5,6 +5,8 @@
 package com.emc.documentum.restclient;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,7 @@ import com.emc.documentum.restclient.model.JsonFeed;
 import com.emc.documentum.restclient.model.JsonObject;
 import com.emc.documentum.restclient.model.PlainRestObject;
 import com.emc.documentum.restclient.util.QueryParams;
+import com.google.common.base.Strings;
 
 @Component("DctmRestClientX")
 @PropertySource("classpath:application.properties")
@@ -170,6 +173,23 @@ public class DctmRestClientX implements InitializingBean{
         return result.getBody();
     }
 
+    public List<JsonEntry> simpleSearch(String terms, String path, int page, int itemsPerPage) {
+        List<String> queryParams = Arrays.asList(
+                QueryParams.Q, terms,
+                QueryParams.VIEW, DEFAULT_VIEW,
+                QueryParams.PAGE, String.valueOf(page),
+                QueryParams.ITEMS_PER_PAGE, String.valueOf(itemsPerPage));
+        if (!("/".equals(path) || Strings.isNullOrEmpty(path))) {
+            queryParams = new ArrayList<>(queryParams);
+            queryParams.add(QueryParams.LOCATIONS);
+            queryParams.add(urlEncodeQueryParam(path));
+        }
+        ResponseEntity<JsonFeed> result = restTemplate.get(repository.getHref(LinkRelation.SEARCH),
+                JsonFeed.class,
+                queryParams.toArray(new String[queryParams.size()]));
+        return result.getBody().getEntries();
+    }
+
     private JsonObject querySingleObjectById(String id) {
         String dql = String.format(DQL_QUERY_BY_ID, DEFAULT_VIEW, id);
         return querySingleObject(dql);
@@ -191,7 +211,7 @@ public class DctmRestClientX implements InitializingBean{
         String dqlUrl = repository.getHref(LinkRelation.DQL);
         ResponseEntity<JsonFeed> response =
                 restTemplate.get(dqlUrl, JsonFeed.class,
-                        QueryParams.DQL, constructDqlParam(dql));
+                        QueryParams.DQL, urlEncodeQueryParam(dql));
         List<JsonEntry> entries = response.getBody().getEntries();
         if (entries == null || entries.size() == 0)
             throw new RuntimeException("No object for dql: " + dql);
@@ -201,9 +221,17 @@ public class DctmRestClientX implements InitializingBean{
         return entries.get(0).getContentObject();
     }
 
-    private static String constructDqlParam(String dql) {
+    private static String urlEncodeQueryParam(String q) {
         try {
-            return UriUtils.encodeQueryParam(dql, "UTF-8");
+            return UriUtils.encodeQueryParam(q, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String urlEncodePathParam(String q) {
+        try {
+            return UriUtils.encodePathSegment(q, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }

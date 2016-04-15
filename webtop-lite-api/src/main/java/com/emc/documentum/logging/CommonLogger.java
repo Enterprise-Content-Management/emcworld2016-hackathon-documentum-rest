@@ -16,12 +16,12 @@ public class CommonLogger {
 
 	@AfterReturning("execution(* com.emc.documentum.filemanager.controller.*.*(..))")
 	public void afterExecution(JoinPoint point) {
-		LOGGER.error("finished execution of " + point.getSignature().toShortString());
+		LOGGER.debug("finished execution of " + point.getSignature().toShortString());
 	}
 	
 	@Before("execution(* com.emc.documentum.filemanager.controller.*.*(..))")
 	public void beforeExecution(JoinPoint point) {
-		LOGGER.error("starting execution of " + point.getSignature().toShortString());
+		LOGGER.debug("starting execution of " + point.getSignature().toShortString());
 	}
 
 	@AfterThrowing(pointcut="execution(* com.emc.documentum.filemanager.controller.*.*(..))",throwing="ex")

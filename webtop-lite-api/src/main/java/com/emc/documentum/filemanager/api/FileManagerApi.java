@@ -31,6 +31,9 @@ public interface FileManagerApi {
 
     void deleteObjectById(String objectId, boolean deleteChildrenOrNot) throws DocumentumException;
 
+    Collection search(String terms, String path, int page, int itemsPerPage) throws DocumentumException;
+
+
     //todo//////////////////////////////////////////////////////////////////////////////
     //todo//////////////        below methods are not used        //////////////////////
     //todo//////////////////////////////////////////////////////////////////////////////

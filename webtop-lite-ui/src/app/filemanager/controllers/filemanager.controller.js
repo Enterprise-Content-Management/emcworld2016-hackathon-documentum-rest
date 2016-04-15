@@ -14,6 +14,7 @@
             $scope.predicate[1] = predicate;
         };
         $scope.query = '';
+        $scope.search = '';
         $scope.fileNavigator = new FileNavigator();
         $scope.apiMiddleware = new ApiMiddleware();
         $scope.uploadFileList = [];
@@ -132,7 +133,7 @@
                 return $scope.openEditItem(item);
             }
         };
-
+            
         $scope.openImagePreview = function() {
             var item = $scope.singleSelection();
             $scope.apiMiddleware.apiHandler.inprocess = true;
@@ -177,7 +178,7 @@
                 $scope.modal('edit', true);
             });
         };
-
+            
         $scope.changePermissions = function() {
             $scope.apiMiddleware.changePermissions($scope.temps, $scope.temp).then(function() {
                 $scope.modal('changepermissions', true);
@@ -212,6 +213,16 @@
             $scope.apiMiddleware.copy($scope.temps, $rootScope.selectedModalPath).then(function() {
                 $scope.fileNavigator.refresh();
                 $scope.modal('copy', true);
+            });
+        };
+
+        $scope.ftSearch = function() {
+            var currentFullPath = $scope.fileNavigator.currentFullPath();
+            return $scope.apiMiddleware.ftSearch($scope.search, currentFullPath).then(function(data) {
+                $scope.fileNavigator.fileList = (data.result || []).map(function(file) {
+                    return new Item(file, "/");
+                });
+                $scope.fileNavigator.buildTree("/");
             });
         };
 

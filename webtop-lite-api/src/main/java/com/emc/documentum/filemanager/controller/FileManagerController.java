@@ -49,20 +49,8 @@ public class FileManagerController extends BaseController {
     public Collection listURL(@RequestBody BaseRequest request) throws DocumentumException {
         Collection result = null;
         String path = request.getPath();
-        Integer pageNumber = 1;
-        Integer pageSize = 20;
-        try{
-        	pageNumber = Integer.parseInt(request.getParam("pageNumber"));
-        }catch(NumberFormatException e){
-
-        }
-        
-        try{
-        	pageSize = Integer.parseInt(request.getParam("pageSize"));
-        }catch(NumberFormatException e){
-        	
-        }
-        
+        Integer pageNumber = request.getIntParam("pageNumber", 1);
+        Integer pageSize = request.getIntParam("pageSize", 20);
         if (Strings.isNullOrEmpty(path) || "/".equals(path)) {
             LOGGER.debug("Getting cabinets");
             result = fileManagerApi.getAllCabinets(pageNumber, pageSize) ;
@@ -178,6 +166,16 @@ public class FileManagerController extends BaseController {
         } catch (Exception e) {
             throw new DocumentumException("Fail to receive multipart file upload.", e);
         }
+    }
+
+
+    @RequestMapping(value = "/searchUrl",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Collection searchUrl(@RequestBody BaseRequest request) throws DocumentumException {
+        Collection result = fileManagerApi.search(request.getParam("terms"), request.getPath(), 1, 20) ;
+        return result;
     }
 
 

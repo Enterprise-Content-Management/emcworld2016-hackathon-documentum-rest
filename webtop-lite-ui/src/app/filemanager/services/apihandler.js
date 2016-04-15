@@ -340,6 +340,31 @@
             return deferred.promise;
         };
 
+        ApiHandler.prototype.ftSearch = function(apiUrl, item, path) {
+            var self = this;
+            var deferred = $q.defer();
+            //console.log(item.id + " " + item.tempModel.id);
+            var data = {
+                action: 'search',
+                path: path, 
+                params: {
+                    terms: item
+                }
+            };
+
+            self.inprocess = true;
+            self.error = '';
+            $http.post(apiUrl, data).success(function(data) {
+                self.deferredHandler(data, deferred);
+            }).error(function(data) {
+                self.deferredHandler(data, deferred, $translate.instant('error_fulltext_search'));
+            })['finally'](function() {
+                self.inprocess = false;
+            });
+
+            return deferred.promise;
+        };
+
         return ApiHandler;
 
     }]);

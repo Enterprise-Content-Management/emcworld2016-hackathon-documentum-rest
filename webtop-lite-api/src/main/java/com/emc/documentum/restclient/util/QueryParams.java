@@ -20,4 +20,6 @@ public final class QueryParams {
     public static final String DELETE_ALL_VERSIONS = "delete-version";
     public static final String OVERWRITE = "overwrite";
     public static final String FORMAT = "format";
+    public static final String Q = "q";
+    public static final String LOCATIONS = "locations";
 }

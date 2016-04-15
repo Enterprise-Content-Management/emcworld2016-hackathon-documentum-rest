@@ -24,6 +24,7 @@ import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -72,11 +73,16 @@ public class DctmRestTemplate {
         RequestEntity<R> request = new RequestEntity<>(requestBody, headers, httpMethod,
                 URI.create(requestUri));
 
-        logRequest(requestUri, httpMethod, headers);
-        org.springframework.http.ResponseEntity<T> response = restTemplate.exchange(request, responseBodyClass);
-        logResponse(response.getStatusCode(), response.getHeaders());
+        try {
+            logRequest(requestUri, httpMethod, headers);
+            org.springframework.http.ResponseEntity<T> response = restTemplate.exchange(request, responseBodyClass);
+            logResponse(response.getStatusCode(), response.getHeaders());
+            return response;
 
-        return response;
+        } catch (HttpStatusCodeException e) {
+            LOGGER.error("Error in REST request: " + e.getResponseBodyAsString());
+            throw new RuntimeException(e.getResponseBodyAsString(), e);
+        }
     }
 
     protected HttpHeaders defaultHttpHeaders(Object requestBody) {

@@ -57,4 +57,12 @@ public class BaseRequest {
     public String getParam(String key) {
         return getParams().containsKey(key) ? String.valueOf(getParams().get(key)) : null;
     }
+
+    public int getIntParam(String key, int defaultValue) {
+        try {
+            return Integer.parseInt(getParam(key));
+        } catch (NumberFormatException e){
+            return defaultValue;
+        }
+    }
 }

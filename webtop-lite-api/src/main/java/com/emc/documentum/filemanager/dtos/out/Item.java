@@ -27,7 +27,7 @@ public class Item {
         if (object != null) {
             setType(convertType(object.getType()));
             setId((String) object.getPropertyByName("r_object_id"));
-            setSize((int) object.getPropertyByName("r_content_size")) ;
+            setSize((Integer) object.getPropertyByName("r_content_size")) ;
             setRights("drwxr-xr-x") ;
         }
     }
