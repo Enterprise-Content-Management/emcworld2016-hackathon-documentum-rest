@@ -47,6 +47,10 @@
             return fileManagerConfig.isImageFilePattern.test(this.model.name);
         };
 
+        Item.prototype.isPdf = function() {
+            return fileManagerConfig.isPdfFilePattern.test(this.model.name);
+        };
+
         Item.prototype.isCompressible = function() {
             return this.isFolder();
         };

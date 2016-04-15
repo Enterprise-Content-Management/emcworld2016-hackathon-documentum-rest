@@ -31,7 +31,7 @@
                 $http.get(SPRING_API + '/api/document/open/' + id)
                 .success(function(response){
                     var pdfContent = response.data,
-                        contentType = 'data:application/pdf;base64, ',
+                        contentType = 'data:' + response.mime + ';base64, ',
                         blob = self.base64ToBlob(pdfContent, contentType),
                         blobUrl = URL.createObjectURL(blob);
                     

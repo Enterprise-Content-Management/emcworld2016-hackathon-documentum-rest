@@ -151,7 +151,7 @@ public class FileManagerController extends BaseController {
     public Data openDocumentById(@PathVariable(value="documentId")String documentId)
             throws DocumentumException {
         ByteArrayResource content = fileManagerApi.getContentById(documentId);
-        return new Data(content.getData());
+        return new Data(content.getData(), content.getMime().toString());
     }
 
     @RequestMapping(value = "/uploadUrl",
