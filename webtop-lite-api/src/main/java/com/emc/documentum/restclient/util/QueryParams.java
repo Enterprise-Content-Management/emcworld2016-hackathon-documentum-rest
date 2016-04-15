@@ -5,6 +5,7 @@
 package com.emc.documentum.restclient.util;
 
 public final class QueryParams {
+
     private QueryParams() {
     }
 
@@ -17,4 +18,6 @@ public final class QueryParams {
     public static final String DELETE_NON_EMPTY = "delete-non-empty";
     public static final String DELETE_ALL_LINKS = "delete-all-links";
     public static final String DELETE_ALL_VERSIONS = "delete-version";
+    public static final String OVERWRITE = "overwrite";
+    public static final String FORMAT = "format";
 }

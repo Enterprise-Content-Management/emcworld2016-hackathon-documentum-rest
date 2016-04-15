@@ -53,12 +53,12 @@
             return deferred.promise;
         };
 
-        ApiHandler.prototype.copy = function(apiUrl, items, path) {
+        ApiHandler.prototype.copy = function(apiUrl, ids, path) {
             var self = this;
             var deferred = $q.defer();
             var data = {
                 action: 'copy',
-                items: items,
+                ids: ids,
                 newPath: path
             };
 
@@ -74,12 +74,12 @@
             return deferred.promise;
         };
 
-        ApiHandler.prototype.move = function(apiUrl, items, path) {
+        ApiHandler.prototype.move = function(apiUrl, ids, path) {
             var self = this;
             var deferred = $q.defer();
             var data = {
                 action: 'move',
-                items: items,
+                ids: ids,
                 newPath: path
             };
             self.inprocess = true;
@@ -94,12 +94,12 @@
             return deferred.promise;
         };
 
-        ApiHandler.prototype.remove = function(apiUrl, items) {
+        ApiHandler.prototype.remove = function(apiUrl, ids) {
             var self = this;
             var deferred = $q.defer();
             var data = {
                 action: 'remove',
-                items: items
+                ids: ids
             };
 
             self.inprocess = true;
@@ -136,17 +136,13 @@
             return deferred.promise;
         };
 
-        ApiHandler.prototype.getContent = function(apiUrl, itemPath) {
+        ApiHandler.prototype.getContent = function(apiUrl) {
             var self = this;
             var deferred = $q.defer();
-            var data = {
-                action: 'getContent',
-                item: itemPath
-            };
 
             self.inprocess = true;
             self.error = '';
-            $http.post(apiUrl, data).success(function(data) {
+            $http.get(apiUrl).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, $translate.instant('error_getting_content'));
@@ -156,13 +152,13 @@
             return deferred.promise;
         };
 
-        ApiHandler.prototype.edit = function(apiUrl, itemPath, content) {
+        ApiHandler.prototype.edit = function(apiUrl, id, content) {
             var self = this;
             var deferred = $q.defer();
             var data = {
                 action: 'edit',
-                item: itemPath,
-                content: content
+                id: id,
+                content: window.btoa(content)
             };
 
             self.inprocess = true;
@@ -183,8 +179,8 @@
             var deferred = $q.defer();
             var data = {
                 action: 'rename',
-                item: itemPath,
-                newItemPath: newPath
+                path: itemPath,
+                newPath: newPath
             };
             self.inprocess = true;
             self.error = '';
@@ -225,12 +221,12 @@
             return deferred.promise;
         };
 
-        ApiHandler.prototype.downloadMultiple = function(apiUrl, items, toFilename, downloadByAjax, forceNewWindow) {
+        ApiHandler.prototype.downloadMultiple = function(apiUrl, ids, toFilename, downloadByAjax, forceNewWindow) {
             var self = this;
             var deferred = $q.defer();
             var data = {
                 action: 'downloadMultiple',
-                items: items,
+                ids: ids,
                 toFilename: toFilename
             };
             var url = [apiUrl, $.param(data)].join('?');
@@ -253,14 +249,14 @@
             return deferred.promise;
         };
 
-        ApiHandler.prototype.compress = function(apiUrl, items, compressedFilename, path) {
+        ApiHandler.prototype.compress = function(apiUrl, ids, compressedFilename, path) {
             var self = this;
             var deferred = $q.defer();
             var data = {
                 action: 'compress',
-                items: items,
-                destination: path,
-                compressedFilename: compressedFilename
+                ids: ids,
+                toDirectory: path,
+                toFilename: compressedFilename
             };
 
             self.inprocess = true;
@@ -275,14 +271,14 @@
             return deferred.promise;
         };
 
-        ApiHandler.prototype.extract = function(apiUrl, item, folderName, path) {
+        ApiHandler.prototype.extract = function(apiUrl, id, folderName, path) {
             var self = this;
             var deferred = $q.defer();
             var data = {
                 action: 'extract',
-                item: item,
-                destination: path,
-                folderName: folderName
+                id: id,
+                toDirectory: path,
+                toFoldername: folderName
             };
 
             self.inprocess = true;
@@ -297,12 +293,12 @@
             return deferred.promise;
         };
 
-        ApiHandler.prototype.changePermissions = function(apiUrl, items, permsOctal, permsCode, recursive) {
+        ApiHandler.prototype.changePermissions = function(apiUrl, ids, permsOctal, permsCode, recursive) {
             var self = this;
             var deferred = $q.defer();
             var data = {
                 action: 'changePermissions',
-                items: items,
+                ids: ids,
                 perms: permsOctal,
                 permsCode: permsCode,
                 recursive: !!recursive
@@ -328,7 +324,7 @@
                 action: 'createFolder',
                 newPath: item.path,
                 name: item.tempModel.name,
-                parentFolderId: item.tempModel.id
+                parentId: item.tempModel.id
             };
 
             self.inprocess = true;

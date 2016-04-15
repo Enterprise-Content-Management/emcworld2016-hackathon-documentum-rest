@@ -15,7 +15,7 @@
             moveUrl: SPRING_API + '/api/moveUrl',
             removeUrl: SPRING_API + '/api/deleteFolderUrl',
             editUrl: SPRING_API + '/api/editUrl',
-            getContentUrl: SPRING_API + '/api/document/content',
+            getContentUrl: SPRING_API + '/api/document/open',
             createFolderUrl: SPRING_API + '/api/createFolderUrl',
             downloadMultipleUrl: SPRING_API + '/api/document/content',
             downloadFileUrl: SPRING_API + '/api/document/content',

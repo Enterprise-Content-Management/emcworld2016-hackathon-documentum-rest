@@ -41,15 +41,16 @@
             var deferred = $q.defer();
             var path = self.currentPath.join('/');
             console.log(this) ;
-            var data = {params: {
-                mode: 'list',
-                onlyFolders: false,
-                path: '/' + path ,
-                //added
-                folderId: this.folderId,
-				pageNumber: this.pageNumber,
-				pageSize: this.pageSize
-            }};
+            var data = {
+                action: 'list',
+                path: '/' + path,
+                id: this.folderId,
+                params: {
+                    onlyFolders: false,
+                    pageNumber: this.pageNumber,
+                    pageSize: this.pageSize
+                }
+            };
 
             self.requesting = true;
             self.fileList = [];

@@ -149,7 +149,7 @@
         $scope.openEditItem = function() {
             var item = $scope.singleSelection();
             $scope.apiMiddleware.getContent(item).then(function(data) {
-                item.tempModel.content = item.model.content = data.result;
+                item.tempModel.content = item.model.content = window.atob(data.data);
             });
             $scope.modal('edit');
         };

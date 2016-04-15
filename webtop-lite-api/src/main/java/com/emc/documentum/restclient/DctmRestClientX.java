@@ -34,7 +34,7 @@ import com.emc.documentum.restclient.util.QueryParams;
 @PropertySource("classpath:application.properties")
 public class DctmRestClientX implements InitializingBean{
 
-    public static final String DEFAULT_VIEW = "r_object_id,r_object_type,object_name,owner_name,r_creation_date,r_modify_date,r_content_size";
+    public static final String DEFAULT_VIEW = "r_object_id,r_object_type,object_name,owner_name,r_creation_date,r_modify_date,r_content_size,a_content_type";
     public static final String DQL_QUERY_BY_ID = "select %s from dm_sysobject where r_object_id='%s'";
     public static final String DQL_QUERY_BY_PATH = "select %s from dm_sysobject where object_name='%s' and folder('%s')";
     public static final String DQL_QUERY_CABINET_BY_PATH = "select %s from dm_cabinet where object_name='%s'";
@@ -157,6 +157,16 @@ public class DctmRestClientX implements InitializingBean{
         ResponseEntity<JsonObject> result = streamingTemplate.post(folder.getHref(LinkRelation.DOCUMENTS),
                 parts,
                 JsonObject.class);
+        return result.getBody();
+    }
+
+    public JsonObject updateContent(JsonObject doc, byte[] data) {
+        String format = (String) doc.getPropertyByName(DocumentumProperties.CONTENT_TYPE);
+        ResponseEntity<JsonObject> result = streamingTemplate.post(doc.getHref(LinkRelation.CONTENTS),
+                data,
+                JsonObject.class,
+                QueryParams.OVERWRITE, "true",
+                QueryParams.FORMAT, format);
         return result.getBody();
     }
 

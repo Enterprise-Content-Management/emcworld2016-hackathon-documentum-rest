@@ -5,12 +5,12 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.emc.documentum.exceptions.DocumentumException;
-import com.emc.documentum.filemanager.dtos.in.NewDocumentRequest;
 import com.emc.documentum.filemanager.dtos.out.Collection;
 import com.emc.documentum.filemanager.dtos.out.Item;
 import com.emc.documentum.restclient.DctmRestClientX;
@@ -80,6 +80,15 @@ public class FileManagerApiImpl implements FileManagerApi {
     }
 
     @Override
+    public Item updateContent(String id, String content) throws DocumentumException {
+        JsonObject object = restClientX.getObjectById(id);
+        JsonObject updated = restClientX.updateContent(
+                object,
+                Base64.decodeBase64(content));
+        return convertJsonObject(updated);
+    }
+
+    @Override
     public ByteArrayResource getContentById(String documentId)
             throws DocumentumException {
         return restClientX.getContentById(documentId);
@@ -103,9 +112,6 @@ public class FileManagerApiImpl implements FileManagerApi {
     //todo//////////////     todo for below methods   - 1st round //////////////////////
     //todo//////////////////////////////////////////////////////////////////////////////
 
-    @Override public Item createDocument(NewDocumentRequest docCreation) throws DocumentumException {
-        return null;
-    }
 
     @Override public Item getCabinetByName(String cabinetName) throws DocumentumException {
         return null;

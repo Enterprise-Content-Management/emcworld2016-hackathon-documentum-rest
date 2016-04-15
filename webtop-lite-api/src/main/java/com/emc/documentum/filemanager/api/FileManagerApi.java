@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 import com.emc.documentum.exceptions.DocumentumException;
-import com.emc.documentum.filemanager.dtos.in.NewDocumentRequest;
 import com.emc.documentum.filemanager.dtos.out.Collection;
 import com.emc.documentum.filemanager.dtos.out.Item;
 import com.emc.documentum.restclient.model.ByteArrayResource;
@@ -24,6 +23,8 @@ public interface FileManagerApi {
     Item uploadContent(String targetFolderPath, InputStream inputStream, String filename, String mime)
             throws DocumentumException;
 
+    Item updateContent(String objectId, String content) throws DocumentumException;
+
     ByteArrayResource getContentById(String documentId) throws DocumentumException;
 
     Item createFolderByParentId(String ParentId, String folderName) throws DocumentumException;
@@ -34,7 +35,6 @@ public interface FileManagerApi {
     //todo//////////////        below methods are not used        //////////////////////
     //todo//////////////////////////////////////////////////////////////////////////////
 
-    Item createDocument(NewDocumentRequest docCreation) throws DocumentumException;
 
     Item getCabinetByName(String cabinetName) throws DocumentumException;
 

@@ -3,6 +3,7 @@ package com.emc.documentum.constants;
 public class LinkRelation {
     public static final String SELF = "self";
     public static final String EDIT = "edit";
+    public static final String CONTENTS = "contents";
 
     public static final String REPOSITORIES = "http://identifiers.emc.com/linkrel/repositories";
     public static final String DQL = "http://identifiers.emc.com/linkrel/dql";

@@ -57,13 +57,15 @@
         };
 
         ApiMiddleware.prototype.getContent = function(item) {
-            var itemPath = this.getFilePath(item);
-            return this.apiHandler.getContent(fileManagerConfig.getContentUrl, itemPath);
+            // var itemPath = this.getFilePath(item);
+            var contentUrl = this.apiHandler.getUrl(fileManagerConfig.getContentUrl, item);
+            return this.apiHandler.getContent(contentUrl);
         };
 
         ApiMiddleware.prototype.edit = function(item) {
-            var itemPath = this.getFilePath(item);
-            return this.apiHandler.edit(fileManagerConfig.editUrl, itemPath, item.tempModel.content);
+            // var itemPath = this.getFilePath(item);
+            var objId = item.model.id;
+            return this.apiHandler.edit(fileManagerConfig.editUrl, objId, item.tempModel.content);
         };
 
         ApiMiddleware.prototype.rename = function(item) {
