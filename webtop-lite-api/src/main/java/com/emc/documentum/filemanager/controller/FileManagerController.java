@@ -50,7 +50,7 @@ public class FileManagerController extends BaseController {
         Collection result = null;
         String path = request.getPath();
         Integer pageNumber = request.getIntParam("pageNumber", 1);
-        Integer pageSize = request.getIntParam("pageSize", 20);
+        Integer pageSize = request.getIntParam("pageSize", 100);
         if (Strings.isNullOrEmpty(path) || "/".equals(path)) {
             LOGGER.debug("Getting cabinets");
             result = fileManagerApi.getAllCabinets(pageNumber, pageSize) ;
@@ -174,7 +174,11 @@ public class FileManagerController extends BaseController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Collection searchUrl(@RequestBody BaseRequest request) throws DocumentumException {
-        Collection result = fileManagerApi.search(request.getParam("terms"), request.getPath(), 1, 20) ;
+        Collection result = fileManagerApi.search(
+                request.getParam("terms"),
+                request.getPath(),
+                request.getIntParam("pageNumber", 1),
+                request.getIntParam("pageSize", 100)) ;
         return result;
     }
 

@@ -217,13 +217,50 @@
         };
 
         $scope.ftSearch = function() {
+            if ($scope.search == '') {
+                $scope.fileNavigator.refresh();
+            } else {
+                return search();
+            }
+        };
+
+        $scope.nextPage = function() {
+            if ($scope.search == '') {
+                $scope.fileNavigator.nextPage();
+            } else {
+                if(!$scope.fileNavigator.hasNext()){
+                    console.log("No More Pages");
+                    return;
+                }
+                $scope.fileNavigator.pageNumber++;
+                return search();
+            }
+        };
+
+        $scope.previousPage = function() {
+            if ($scope.search == '') {
+                $scope.fileNavigator.previousPage();
+            } else {
+                if(!$scope.fileNavigator.hasPrevious()){
+                    console.log("No Previous Pages");
+                    return;
+                }
+                $scope.fileNavigator.pageNumber--;
+                return search();
+            }
+        };
+
+        var search = function() {
             var currentFullPath = $scope.fileNavigator.currentFullPath();
-            return $scope.apiMiddleware.ftSearch($scope.search, currentFullPath).then(function(data) {
-                $scope.fileNavigator.fileList = (data.result || []).map(function(file) {
-                    return new Item(file, "/");
+            var currentPage = $scope.fileNavigator.pageNumber;
+            var currentPageSize = $scope.fileNavigator.pageSize;
+            return $scope.apiMiddleware.ftSearch($scope.search, currentFullPath, currentPage, currentPageSize)
+                .then(function(data) {
+                    $scope.fileNavigator.fileList = (data.result || []).map(function(file) {
+                        return new Item(file, "/");
+                    });
+                    $scope.fileNavigator.buildTree("/");
                 });
-                $scope.fileNavigator.buildTree("/");
-            });
         };
 
         $scope.compress = function() {

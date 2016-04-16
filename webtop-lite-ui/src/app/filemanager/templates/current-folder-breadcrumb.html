@@ -17,8 +17,13 @@
             <i class="glyphicon glyphicon-level-up"></i>
         </button>
     </li>
+    <li>
+        <a href="">
+            <i class="glyphicon glyphicon-filter"></i>
+        </a>
+        <input type="text" class="input-sm" ng-show="config.searchForm"
+               placeholder="{{'filter' | translate}}..." ng-model="$parent.query">
+    </li>
 
     <ul class="pager customPager" ng-include="config.tplPath + '/paginationActions.html'"></ul>
-    <input type="text" class="form-control input-sm customPager" ng-show="config.searchForm"
-           placeholder="{{'filter' | translate}}..." ng-model="$parent.query">
 </ol>

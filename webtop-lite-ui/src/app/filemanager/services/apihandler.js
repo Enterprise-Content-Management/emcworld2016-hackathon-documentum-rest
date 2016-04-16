@@ -340,7 +340,7 @@
             return deferred.promise;
         };
 
-        ApiHandler.prototype.ftSearch = function(apiUrl, item, path) {
+        ApiHandler.prototype.ftSearch = function(apiUrl, item, path, pageNumber, pageSize) {
             var self = this;
             var deferred = $q.defer();
             //console.log(item.id + " " + item.tempModel.id);
@@ -348,7 +348,9 @@
                 action: 'search',
                 path: path, 
                 params: {
-                    terms: item
+                    terms: item,
+                    pageNumber: pageNumber,
+                    pageSize: pageSize
                 }
             };
 
