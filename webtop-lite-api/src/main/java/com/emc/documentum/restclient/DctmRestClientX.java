@@ -175,14 +175,14 @@ public class DctmRestClientX implements InitializingBean{
 
     public List<JsonEntry> simpleSearch(String terms, String path, int page, int itemsPerPage) {
         List<String> queryParams = Arrays.asList(
-                QueryParams.Q, terms,
+                QueryParams.Q, urlEncodeQueryParam(terms),
                 QueryParams.VIEW, DEFAULT_VIEW,
                 QueryParams.PAGE, String.valueOf(page),
                 QueryParams.ITEMS_PER_PAGE, String.valueOf(itemsPerPage));
         if (!("/".equals(path) || Strings.isNullOrEmpty(path))) {
             queryParams = new ArrayList<>(queryParams);
             queryParams.add(QueryParams.LOCATIONS);
-            queryParams.add(urlEncodeQueryParam(path));
+            queryParams.add(urlEncodePathParam(path));
         }
         ResponseEntity<JsonFeed> result = restTemplate.get(repository.getHref(LinkRelation.SEARCH),
                 JsonFeed.class,
