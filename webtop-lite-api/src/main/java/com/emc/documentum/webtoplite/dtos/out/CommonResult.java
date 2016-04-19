@@ -2,7 +2,7 @@
  * Copyright (c) 2016. EMC Coporation. All Rights Reserved.
  */
 
-package com.emc.documentum.filemanager.dtos.out;
+package com.emc.documentum.webtoplite.dtos.out;
 
 public class CommonResult {
     boolean success;

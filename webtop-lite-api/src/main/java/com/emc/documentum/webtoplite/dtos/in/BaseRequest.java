@@ -2,7 +2,7 @@
  * Copyright (c) 2016. EMC Coporation. All Rights Reserved.
  */
 
-package com.emc.documentum.filemanager.dtos.in;
+package com.emc.documentum.webtoplite.dtos.in;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -2,7 +2,7 @@
  * Copyright (c) 2016. EMC Coporation. All Rights Reserved.
  */
 
-package com.emc.documentum.filemanager.api;
+package com.emc.documentum.webtoplite.api;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,17 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.emc.documentum.exceptions.DocumentumException;
-import com.emc.documentum.filemanager.dtos.out.Collection;
-import com.emc.documentum.filemanager.dtos.out.Item;
+import com.emc.documentum.webtoplite.dtos.out.Collection;
+import com.emc.documentum.webtoplite.dtos.out.Item;
 import com.emc.documentum.restclient.DctmRestClientX;
 import com.emc.documentum.restclient.model.ByteArrayResource;
 import com.emc.documentum.restclient.model.JsonObject;
 
-import static com.emc.documentum.filemanager.transformation.CoreRestTransformation.convertCoreRSEntryList;
-import static com.emc.documentum.filemanager.transformation.CoreRestTransformation.convertJsonObject;
+import static com.emc.documentum.webtoplite.transformation.CoreRestTransformation.convertCoreRSEntryList;
+import static com.emc.documentum.webtoplite.transformation.CoreRestTransformation.convertJsonObject;
 
-@Component("FileManagerApi")
-public class FileManagerApiImpl implements FileManagerApi {
+@Component("WebtopLiteApi")
+public class WebtopLiteApiImpl implements WebtopLiteApi {
 
     @Autowired
     DctmRestClientX restClientX;

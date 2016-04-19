@@ -18,17 +18,17 @@ import org.springframework.stereotype.Component;
 public class CommonLogger {
     private static final Log LOGGER = LogFactory.getLog(CommonLogger.class);
 
-    @AfterReturning("execution(* com.emc.documentum.filemanager.controller.*.*(..))")
+    @AfterReturning("execution(* com.emc.documentum.webtoplite.controller.*.*(..))")
     public void afterExecution(JoinPoint point) {
         LOGGER.debug("finished execution of " + point.getSignature().toShortString());
     }
 
-    @Before("execution(* com.emc.documentum.filemanager.controller.*.*(..))")
+    @Before("execution(* com.emc.documentum.webtoplite.controller.*.*(..))")
     public void beforeExecution(JoinPoint point) {
         LOGGER.debug("starting execution of " + point.getSignature().toShortString());
     }
 
-    @AfterThrowing(pointcut = "execution(* com.emc.documentum.filemanager.controller.*.*(..))", throwing = "ex")
+    @AfterThrowing(pointcut = "execution(* com.emc.documentum.webtoplite.controller.*.*(..))", throwing = "ex")
     public void afterException(JoinPoint point, Throwable ex) {
         LOGGER.error("execution of " + point.getSignature().toShortString() + " failed.");
         LOGGER.error(ex.getMessage(), ex);

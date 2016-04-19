@@ -2,7 +2,7 @@
  * Copyright (c) 2016. EMC Coporation. All Rights Reserved.
  */
 
-package com.emc.documentum.filemanager.configuration;
+package com.emc.documentum.webtoplite.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +20,7 @@ public class SwaggerConfig {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2).select()
-                .apis(RequestHandlerSelectors.basePackage("com.emc.documentum.filemanager.rest"))
+                .apis(RequestHandlerSelectors.basePackage("com.emc.documentum.webtoplite"))
                 .paths(PathSelectors.any()).build();
     }
 }

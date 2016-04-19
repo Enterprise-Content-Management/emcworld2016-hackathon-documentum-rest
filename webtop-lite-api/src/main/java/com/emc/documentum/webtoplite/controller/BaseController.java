@@ -1,4 +1,4 @@
-package com.emc.documentum.filemanager.controller;
+package com.emc.documentum.webtoplite.controller;
 
 /*
  * Copyright (c) 2016. EMC Coporation. All Rights Reserved.
@@ -14,7 +14,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import com.emc.documentum.exceptions.DocumentumException;
-import com.emc.documentum.filemanager.dtos.out.CommonResult;
+import com.emc.documentum.webtoplite.dtos.out.CommonResult;
 
 public abstract class BaseController {
 

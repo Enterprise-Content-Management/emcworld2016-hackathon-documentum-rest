@@ -2,19 +2,19 @@
  * Copyright (c) 2016. EMC Coporation. All Rights Reserved.
  */
 
-package com.emc.documentum.filemanager.api;
+package com.emc.documentum.webtoplite.api;
 
 import java.io.InputStream;
 
 import com.emc.documentum.exceptions.DocumentumException;
-import com.emc.documentum.filemanager.dtos.out.Collection;
-import com.emc.documentum.filemanager.dtos.out.Item;
+import com.emc.documentum.webtoplite.dtos.out.Collection;
+import com.emc.documentum.webtoplite.dtos.out.Item;
 import com.emc.documentum.restclient.model.ByteArrayResource;
 
 /**
  * File manager APIs
  */
-public interface FileManagerApi {
+public interface WebtopLiteApi {
 
     /**
      * Get a page of cabinets (root folders)

@@ -2,12 +2,12 @@
  * Copyright (c) 2016. EMC Coporation. All Rights Reserved.
  */
 
-package com.emc.documentum.filemanager.transformation;
+package com.emc.documentum.webtoplite.transformation;
 
 import java.util.List;
 
-import com.emc.documentum.filemanager.dtos.out.Collection;
-import com.emc.documentum.filemanager.dtos.out.Item;
+import com.emc.documentum.webtoplite.dtos.out.Collection;
+import com.emc.documentum.webtoplite.dtos.out.Item;
 import com.emc.documentum.restclient.model.JsonEntry;
 import com.emc.documentum.restclient.model.JsonObject;
 
