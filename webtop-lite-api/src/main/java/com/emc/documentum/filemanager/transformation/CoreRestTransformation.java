@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016. EMC Coporation. All Rights Reserved.
+ */
+
 package com.emc.documentum.filemanager.transformation;
 
 import java.util.List;
@@ -9,7 +13,7 @@ import com.emc.documentum.restclient.model.JsonObject;
 
 public final class CoreRestTransformation {
 
-	private CoreRestTransformation() {
+    private CoreRestTransformation() {
     }
 
     public static Collection convertCoreRSEntryList(List<JsonEntry> jsonEntryFeed) {
@@ -22,7 +26,7 @@ public final class CoreRestTransformation {
         return collection;
     }
 
-	public static Item convertJsonObject(JsonObject jsonObject) {
-		return new Item(jsonObject);
-	}
+    public static Item convertJsonObject(JsonObject jsonObject) {
+        return new Item(jsonObject);
+    }
 }

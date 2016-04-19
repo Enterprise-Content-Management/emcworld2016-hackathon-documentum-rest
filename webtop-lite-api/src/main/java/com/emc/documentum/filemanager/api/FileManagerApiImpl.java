@@ -1,9 +1,12 @@
+/*
+ * Copyright (c) 2016. EMC Coporation. All Rights Reserved.
+ */
+
 package com.emc.documentum.filemanager.api;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.HashMap;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -23,8 +26,8 @@ import static com.emc.documentum.filemanager.transformation.CoreRestTransformati
 @Component("FileManagerApi")
 public class FileManagerApiImpl implements FileManagerApi {
 
-	@Autowired
-	DctmRestClientX restClientX;
+    @Autowired
+    DctmRestClientX restClientX;
 
     @Override
     public void deleteObjectById(String objectId, boolean deleteChildrenOrNot) throws DocumentumException {
@@ -55,7 +58,8 @@ public class FileManagerApiImpl implements FileManagerApi {
         JsonObject object = restClientX.getObjectByPath(oldPath);
         JsonObject updated = restClientX.update(
                 object,
-                Collections.<String, Object>singletonMap("object_name", newPath.substring(newPath.lastIndexOf("/") + 1)));
+                Collections
+                        .<String, Object>singletonMap("object_name", newPath.substring(newPath.lastIndexOf("/") + 1)));
         return convertJsonObject(updated);
     }
 
@@ -110,49 +114,5 @@ public class FileManagerApiImpl implements FileManagerApi {
     public Collection search(String terms, String path, int page, int itemsPerPage)
             throws DocumentumException {
         return convertCoreRSEntryList(restClientX.simpleSearch(terms, path, page, itemsPerPage));
-    }
-
-
-    //todo//////////////////////////////////////////////////////////////////////////////
-    //todo////////////// above methods are refactored - 1st round //////////////////////
-    //todo//////////////     todo for below methods   - 1st round //////////////////////
-    //todo//////////////////////////////////////////////////////////////////////////////
-
-
-    @Override public Item getCabinetByName(String cabinetName) throws DocumentumException {
-        return null;
-    }
-
-    @Override public Item getObjectById(String cabinetId) throws DocumentumException {
-        return null;
-    }
-
-    @Override public Item createFolder(String cabinetName, String folderName) throws DocumentumException {
-        return null;
-    }
-
-    @Override public Collection getPaginatedResult(String folderId, int startIndex, int pageSize)
-            throws DocumentumException {
-        return null;
-    }
-
-    @Override public Collection getDocumentByName(String name) throws DocumentumException {
-        return null;
-    }
-
-    @Override public Item cancelCheckout(String documentId) throws DocumentumException {
-        return null;
-    }
-
-    @Override public Item checkoutDocument(String documentId) throws DocumentumException {
-        return null;
-    }
-
-    @Override public Item checkinDocument(String documentId, byte[] content) throws DocumentumException {
-        return null;
-    }
-
-    @Override public Item createFolder(String parentId, HashMap<String, Object> properties) throws DocumentumException {
-        return null;
     }
 }

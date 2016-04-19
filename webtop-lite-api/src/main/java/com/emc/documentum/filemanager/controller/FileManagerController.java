@@ -1,6 +1,12 @@
+/*
+ * Copyright (c) 2016. EMC Coporation. All Rights Reserved.
+ */
+
 package com.emc.documentum.filemanager.controller;
 
+import java.io.IOException;
 import java.util.Iterator;
+import javax.servlet.ServletException;
 import javax.servlet.http.Part;
 
 import org.apache.commons.io.IOUtils;
@@ -32,6 +38,9 @@ import com.google.common.base.Strings;
 @RequestMapping("/api")
 public class FileManagerController extends BaseController {
 
+    @Autowired
+    FileManagerApi fileManagerApi;
+
     @RequestMapping(value = "/test",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -39,72 +48,66 @@ public class FileManagerController extends BaseController {
         return fileManagerApi.getAllCabinets(1, 5);
     }
 
-    @Autowired
-    FileManagerApi fileManagerApi;
-
     @RequestMapping(value = "/listUrl",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Collection listURL(@RequestBody BaseRequest request) throws DocumentumException {
+    public Collection listObjects(@RequestBody BaseRequest request) throws DocumentumException {
         Collection result = null;
         String path = request.getPath();
         Integer pageNumber = request.getIntParam("pageNumber", 1);
         Integer pageSize = request.getIntParam("pageSize", 100);
-        if (Strings.isNullOrEmpty(path) || "/".equals(path)) {
-            LOGGER.debug("Getting cabinets");
-            result = fileManagerApi.getAllCabinets(pageNumber, pageSize) ;
-        }
-        else {
-            LOGGER.debug("getting children for PATH : " + path);
+        if (isRoot(path)) {
+            result = fileManagerApi.getAllCabinets(pageNumber, pageSize);
+        } else {
             result = fileManagerApi.getChildren(path, pageNumber, pageSize);
         }
         return result;
-	}
+    }
 
     @RequestMapping(value = "/createFolderUrl",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public CommonResult createFolderUrl(@RequestBody CreateObjectRequest request) throws DocumentumException {
-        fileManagerApi.createFolderByParentId(request.getParentId(), request.getName()) ;
-        return commonResponse();
-	}
+    public CommonResult createFolder(@RequestBody CreateObjectRequest request) throws DocumentumException {
+        fileManagerApi.createFolderByParentId(request.getParentId(), request.getName());
+        return successResponse();
+    }
 
     @RequestMapping(value = "/renameUrl",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public CommonResult renameUrl(@RequestBody BaseRequest request) throws DocumentumException {
+    public CommonResult rename(@RequestBody BaseRequest request) throws DocumentumException {
         fileManagerApi.renameByPath(request.getPath(), request.getNewPath());
-        return commonResponse();
+        return successResponse();
     }
 
     @RequestMapping(value = "/moveUrl",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public CommonResult moveUrl(@RequestBody BaseRequest request) throws DocumentumException {
+    public CommonResult move(@RequestBody BaseRequest request) throws DocumentumException {
         for (String id : request.getIds()) {
             fileManagerApi.moveObject(id, request.getNewPath());
         }
-        return commonResponse();
+        return successResponse();
     }
 
     @RequestMapping(value = "/copyUrl",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public CommonResult copyUrl(@RequestBody BaseRequest request) throws DocumentumException {
+    public CommonResult copy(@RequestBody BaseRequest request) throws DocumentumException {
         for (String id : request.getIds()) {
             fileManagerApi.copyObject(id, request.getNewPath());
         }
-        return commonResponse();
+        return successResponse();
     }
 
     @RequestMapping(value = "/editUrl", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public CommonResult editUrl(@RequestBody CreateObjectRequest request) throws DocumentumException {
+    public CommonResult editContent(@RequestBody CreateObjectRequest request) throws DocumentumException {
         fileManagerApi.updateContent(request.getId(), request.getContent());
-        return commonResponse();
+        return successResponse();
     }
 
     @RequestMapping(value = "/deleteFolderUrl",
@@ -116,12 +119,12 @@ public class FileManagerController extends BaseController {
             //TODO should get this boolean from UI
             fileManagerApi.deleteObjectById(id, false);
         }
-        return commonResponse();
+        return successResponse();
     }
 
     @RequestMapping(value = "/document/content/{documentId}",
             method = RequestMethod.GET)
-    public ResponseEntity<byte[]> getDocumentContentById(@PathVariable(value="documentId")String documentId)
+    public ResponseEntity<byte[]> getContentByDocId(@PathVariable(value = "documentId") String documentId)
             throws DocumentumException {
         ByteArrayResource content = fileManagerApi.getContentById(documentId);
 
@@ -138,7 +141,7 @@ public class FileManagerController extends BaseController {
     @RequestMapping(value = "/document/open/{documentId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Data openDocumentById(@PathVariable(value="documentId")String documentId)
+    public Data openContentByDocId(@PathVariable(value = "documentId") String documentId)
             throws DocumentumException {
         ByteArrayResource content = fileManagerApi.getContentById(documentId);
         return new Data(content.getData(), content.getMime().toString());
@@ -148,7 +151,7 @@ public class FileManagerController extends BaseController {
             method = RequestMethod.POST,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public CommonResult uploadUrl(MultipartHttpServletRequest request) throws DocumentumException {
+    public CommonResult uploadContent(MultipartHttpServletRequest request) throws DocumentumException {
         try {
             String targetFolderPath = null;
             Iterator<Part> parts = request.getParts().iterator();
@@ -162,40 +165,26 @@ public class FileManagerController extends BaseController {
                     fileManagerApi.uploadContent(targetFolderPath, next.getInputStream(), filename, mime);
                 }
             }
-            return commonResponse();
-        } catch (Exception e) {
+            return successResponse();
+        } catch (ServletException | IOException e) {
             throw new DocumentumException("Fail to receive multipart file upload.", e);
         }
     }
-
 
     @RequestMapping(value = "/searchUrl",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Collection searchUrl(@RequestBody BaseRequest request) throws DocumentumException {
+    public Collection search(@RequestBody BaseRequest request) throws DocumentumException {
         Collection result = fileManagerApi.search(
                 request.getParam("terms"),
                 request.getPath(),
                 request.getIntParam("pageNumber", 1),
-                request.getIntParam("pageSize", 100)) ;
+                request.getIntParam("pageSize", 100));
         return result;
     }
 
-
-    //todo//////////////////////////////////////////////////////////////////////////////
-    //todo////////////// above methods are refactored - 1st round //////////////////////
-    //todo//////////////     todo for below methods   - 1st round //////////////////////
-    //todo//////////////////////////////////////////////////////////////////////////////
-
-
-    @RequestMapping(value = "/permissionsUrl", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public CommonResult permissionsUrl() {
-        return commonResponse();
-	}
-
-    @RequestMapping(value = "/extractUrl", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public CommonResult extractUrl() {
-        return commonResponse();
-	}
+    private boolean isRoot(String path) {
+        return Strings.isNullOrEmpty(path) || "/".equals(path);
+    }
 }
