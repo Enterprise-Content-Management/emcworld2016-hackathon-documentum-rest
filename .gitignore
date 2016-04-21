@@ -5,11 +5,12 @@
 **/.tmp/
 **/.DS_Store
 
-webtop-lite-api/target/
+file-manager-api/target/
 
-webtop-lite-ui/node_modules/
-webtop-lite-ui/bower_components/
-webtop-lite-ui/coverage/
-webtop-lite-ui/.sass-cache/
-webtop-lite-ui/dist/
-webtop-lite-ui/**/.eslintrc
+file-manager-ui/node_modules/
+file-manager-ui/bower_components/
+file-manager-ui/coverage/
+file-manager-ui/.sass-cache/
+file-manager-ui/dist/
+file-manager-ui/e2e/.eslintrc
+file-manager-ui/gulp/.eslintrc
