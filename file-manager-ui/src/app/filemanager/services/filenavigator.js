@@ -42,6 +42,25 @@
             self.fileList = [];
             self.error = '';
 
+            var data = {
+                action: 'list',
+                path: '/' + path,
+                id: this.folderId,
+                params: {
+                    onlyFolders: false,
+                    pageNumber: this.pageNumber,
+                    pageSize: this.pageSize
+                }
+            };
+
+            $http.post(fileManagerConfig.listUrl , data).success(function(data) {
+                self.deferredHandler(data, deferred);
+            }).error(function(data) {
+                self.deferredHandler(data, deferred, 'Unknown error listing, check the response');
+            })['finally'](function() {
+                self.requesting = false;
+            });
+
             var deferred = $q.defer();
             var path = self.currentPath.join('/');
             console.log(this) ;
