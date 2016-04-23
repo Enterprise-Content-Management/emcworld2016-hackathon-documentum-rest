@@ -17,11 +17,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriUtils;
 
 import com.emc.documentum.constants.AppRuntime;
+import com.emc.documentum.constants.DocumentumProperties;
 import com.emc.documentum.constants.LinkRelation;
 import com.emc.documentum.restclient.model.ByteArrayResource;
 import com.emc.documentum.restclient.model.JsonEntry;
 import com.emc.documentum.restclient.model.JsonFeed;
 import com.emc.documentum.restclient.model.JsonObject;
+import com.emc.documentum.restclient.model.PlainRestObject;
 import com.emc.documentum.restclient.util.QueryParams;
 
 @Component("DctmRestClient")
@@ -73,7 +75,14 @@ public class DctmRestClient implements InitializingBean {
     }
 
     public JsonObject createFolder(String parentId, String folderName) {
-        throw new RuntimeException("Not implemented.");
+        JsonObject parentFolder = getObjectById(parentId);
+        String childFoldersUrl = parentFolder.getHref(LinkRelation.FOLDERS);
+
+        ResponseEntity<JsonObject> result = restTemplate.post(childFoldersUrl,
+                new PlainRestObject("dm_folder", singleProperty(DocumentumProperties.OBJECT_NAME, folderName)),
+                JsonObject.class,
+                QueryParams.VIEW, DEFAULT_VIEW);
+        return result.getBody();
     }
 
     public JsonObject update(JsonObject object, Map<String, Object> newProperties) {

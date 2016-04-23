@@ -81,6 +81,8 @@ public class DctmRestTemplate {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(DCTM_VND_JSON_TYPE, MediaType.APPLICATION_JSON));
 
+        headers.setContentType(DCTM_VND_JSON_TYPE);
+
         return headers;
     }
 
