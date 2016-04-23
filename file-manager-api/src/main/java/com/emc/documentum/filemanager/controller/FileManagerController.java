@@ -5,12 +5,15 @@
 package com.emc.documentum.filemanager.controller;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 import javax.servlet.ServletException;
 import javax.servlet.http.Part;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,6 +33,7 @@ import com.emc.documentum.filemanager.dtos.in.CreateObjectRequest;
 import com.emc.documentum.filemanager.dtos.out.Collection;
 import com.emc.documentum.filemanager.dtos.out.CommonResult;
 import com.emc.documentum.filemanager.dtos.out.Data;
+import com.emc.documentum.filemanager.dtos.out.Item;
 import com.emc.documentum.restclient.model.ByteArrayResource;
 import com.google.common.base.Strings;
 
@@ -40,6 +44,19 @@ public class FileManagerController extends BaseController {
 
     @Autowired
     FileManagerApi fileManagerApi;
+
+    @Autowired
+    FileManagerApi fileManagerApi;
+
+    @RequestMapping(value = "/about",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Item about() throws DocumentumException {
+        Item about = new Item();
+        about.setName("Welcome to Documentum AngularJS File Manager API Server. ");
+        about.setDate(new DateFormatter("yyyy/MM/dd hh:mm:ss a").print(new Date(), Locale.ENGLISH));
+        return about;
+    }
 
     @RequestMapping(value = "/test",
             method = RequestMethod.GET,
