@@ -35,7 +35,7 @@ import com.google.common.base.Strings;
 
 @Component("DctmRestClientX")
 @PropertySource("classpath:application.properties")
-public class DctmRestClientX implements InitializingBean{
+public class DctmRestClient implements InitializingBean {
 
     public static final String DEFAULT_VIEW = "r_object_id,r_object_type,object_name,owner_name,r_creation_date,r_modify_date,r_content_size,a_content_type";
     public static final String DQL_QUERY_BY_ID = "select %s from dm_sysobject where r_object_id='%s'";
@@ -48,6 +48,27 @@ public class DctmRestClientX implements InitializingBean{
     protected DctmRestTemplate restTemplate;
     protected DctmRestTemplate streamingTemplate;
     protected JsonObject repository;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        restTemplate = new DctmRestTemplate(data.username, data.password, false);
+        streamingTemplate = new DctmRestTemplate(data.username, data.password, true);
+        // get home doc
+        ResponseEntity<Map> homedoc = restTemplate.get(data.contextRootUri + "/services", Map.class);
+        Map rootResources = (Map) homedoc.getBody().get("resources");
+        Map repositoriesEntry = (Map) rootResources.get(LinkRelation.REPOSITORIES);
+        String repositoriesUri = (String) repositoriesEntry.get("href");
+
+        // get repositories
+        ResponseEntity<JsonFeed> repositories = restTemplate
+                .get(repositoriesUri, JsonFeed.class, QueryParams.INLINE, "true");
+        for (JsonEntry repo : repositories.getBody().getEntries()) {
+            if (data.repo.equals(repo.getTitle())) {
+                repository = repo.getContentObject();
+                break;
+            }
+        }
+    }
 
     public List<JsonEntry> getAllCabinets(int pageNumber, int pageSize) {
         String cabinetsUrl = repository.getHref(LinkRelation.CABINETS);
@@ -245,26 +266,5 @@ public class DctmRestClientX implements InitializingBean{
                         QueryParams.PAGE, String.valueOf(pageNumber),
                         QueryParams.ITEMS_PER_PAGE, String.valueOf(pageSize));
         return response.getBody().getEntries();
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        restTemplate = new DctmRestTemplate(data.username, data.password, false);
-        streamingTemplate = new DctmRestTemplate(data.username, data.password, true);
-        // get home doc
-        ResponseEntity<Map> homedoc = restTemplate.get(data.contextRootUri + "/services", Map.class);
-        Map rootResources = (Map) homedoc.getBody().get("resources");
-        Map repositoriesEntry = (Map) rootResources.get(LinkRelation.REPOSITORIES);
-        String repositoriesUri = (String) repositoriesEntry.get("href");
-
-        // get repositories
-        ResponseEntity<JsonFeed> repositories = restTemplate
-                .get(repositoriesUri, JsonFeed.class, QueryParams.INLINE, "true");
-        for(JsonEntry repo : repositories.getBody().getEntries()) {
-            if (data.repo.equals(repo.getTitle())) {
-                repository = repo.getContentObject();
-                break;
-            }
-        }
     }
 }
