@@ -33,7 +33,7 @@ import com.emc.documentum.restclient.model.PlainRestObject;
 import com.emc.documentum.restclient.util.QueryParams;
 import com.google.common.base.Strings;
 
-@Component("DctmRestClientX")
+@Component("DctmRestClient")
 @PropertySource("classpath:application.properties")
 public class DctmRestClient implements InitializingBean {
 
