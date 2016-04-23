@@ -172,7 +172,22 @@
                 var self = this;
                 var deferred = $q.defer();
 
-                //todo - implement here
+                var data = {
+                    action: 'createFolder',
+                    newPath: item.path,
+                    name: item.tempModel.name,
+                    parentId: item.tempModel.id
+                };
+
+                self.inprocess = true;
+                self.error = '';
+                $http.post(apiUrl, data).success(function(data) {
+                    self.deferredHandler(data, deferred);
+                }).error(function(data) {
+                    self.deferredHandler(data, deferred, $translate.instant('error_creating_folder'));
+                })['finally'](function() {
+                    self.inprocess = false;
+                });
 
                 return deferred.promise;
             };
