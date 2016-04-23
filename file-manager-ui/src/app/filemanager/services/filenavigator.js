@@ -42,6 +42,9 @@
             self.fileList = [];
             self.error = '';
 
+            var deferred = $q.defer();
+            var path = self.currentPath.join('/');
+
             var data = {
                 action: 'list',
                 path: '/' + path,
@@ -52,6 +55,7 @@
                     pageSize: this.pageSize
                 }
             };
+            console.log(this) ;
 
             $http.post(fileManagerConfig.listUrl , data).success(function(data) {
                 self.deferredHandler(data, deferred);
@@ -60,10 +64,6 @@
             })['finally'](function() {
                 self.requesting = false;
             });
-
-            var deferred = $q.defer();
-            var path = self.currentPath.join('/');
-            console.log(this) ;
 
             return deferred.promise;
         };
