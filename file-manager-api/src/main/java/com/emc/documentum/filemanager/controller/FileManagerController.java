@@ -156,6 +156,47 @@ public class FileManagerController extends BaseController {
         return result;
     }
 
+    @RequestMapping(value = "/renameUrl",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public CommonResult rename(@RequestBody BaseRequest request) throws DocumentumException {
+        fileManagerApi.renameByPath(request.getPath(), request.getNewPath());
+        return successResponse();
+    }
+
+    @RequestMapping(value = "/moveUrl",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public CommonResult move(@RequestBody BaseRequest request) throws DocumentumException {
+        for (String id : request.getIds()) {
+            fileManagerApi.moveObject(id, request.getNewPath());
+        }
+        return successResponse();
+    }
+
+    @RequestMapping(value = "/copyUrl",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public CommonResult copy(@RequestBody BaseRequest request) throws DocumentumException {
+        for (String id : request.getIds()) {
+            fileManagerApi.copyObject(id, request.getNewPath());
+        }
+        return successResponse();
+    }
+
+    @RequestMapping(value = "/deleteFolderUrl",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public CommonResult deleteFolderUrl(@RequestBody BaseRequest request) throws DocumentumException {
+        for (String id : request.getIds()) {
+            fileManagerApi.deleteObjectById(id, false);
+        }
+        return successResponse();
+    }
+
     private boolean isRoot(String path) {
         return Strings.isNullOrEmpty(path) || "/".equals(path);
     }

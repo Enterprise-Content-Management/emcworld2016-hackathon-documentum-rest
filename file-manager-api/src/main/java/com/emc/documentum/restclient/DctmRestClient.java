@@ -23,11 +23,13 @@ import com.emc.documentum.constants.AppRuntime;
 import com.emc.documentum.constants.DocumentumProperties;
 import com.emc.documentum.constants.LinkRelation;
 import com.emc.documentum.restclient.model.ByteArrayResource;
+import com.emc.documentum.restclient.model.HrefObject;
 import com.emc.documentum.restclient.model.JsonEntry;
 import com.emc.documentum.restclient.model.JsonFeed;
 import com.emc.documentum.restclient.model.JsonObject;
 import com.emc.documentum.restclient.model.PlainRestObject;
 import com.emc.documentum.restclient.util.QueryParams;
+import com.google.common.base.Strings;
 
 @Component("DctmRestClient")
 @PropertySource("classpath:application.properties")
@@ -163,11 +165,27 @@ public class DctmRestClient implements InitializingBean {
     }
 
     public List<JsonEntry> simpleSearch(String terms, String path, int page, int itemsPerPage) {
-        //TODO FOR ROUND 6 -- BEGIN
-        //TODO FOR ROUND 6 -- IMPLEMENT
-        String searchUrl = "";
+        //CODE FOR ROUND 6 -- BEGIN
+        //CODE FOR ROUND 6 -- IMPLEMENT
+        String searchUrl = repository.getHref(LinkRelation.SEARCH);
         String[] queryParams = new String[0];
-        //TODO FOR ROUND 6 -- END
+        if (("/".equals(path) || Strings.isNullOrEmpty(path))) {
+            queryParams = new String[] {
+                    QueryParams.Q, urlEncodeQueryParam(terms),
+                    QueryParams.VIEW, DEFAULT_VIEW,
+                    QueryParams.PAGE, String.valueOf(page),
+                    QueryParams.ITEMS_PER_PAGE, String.valueOf(itemsPerPage)
+            };
+        } else {
+            queryParams = new String[] {
+                    QueryParams.Q, urlEncodeQueryParam(terms),
+                    QueryParams.VIEW, DEFAULT_VIEW,
+                    QueryParams.PAGE, String.valueOf(page),
+                    QueryParams.ITEMS_PER_PAGE, String.valueOf(itemsPerPage),
+                    QueryParams.LOCATIONS, urlEncodePathParam(path)
+            };
+        }
+        //CODE FOR ROUND 6 -- END
         ResponseEntity<JsonFeed> result = restTemplate.get(searchUrl,
                 JsonFeed.class,
                 queryParams);
@@ -175,19 +193,41 @@ public class DctmRestClient implements InitializingBean {
     }
 
     public JsonObject update(JsonObject object, Map<String, Object> newProperties) {
-        throw new RuntimeException("Not implemented.");
+        ResponseEntity<JsonObject> result = restTemplate.post(object.getHref(LinkRelation.SELF),
+                new PlainRestObject(null, newProperties),
+                JsonObject.class,
+                QueryParams.VIEW, DEFAULT_VIEW);
+        return result.getBody();
     }
 
     public JsonObject copy(JsonObject object, JsonObject targetFolder) {
-        throw new RuntimeException("Not implemented.");
+        ResponseEntity<JsonObject> result = restTemplate.post(targetFolder.getHref(LinkRelation.OBJECTS),
+                new HrefObject(object.getHref(LinkRelation.EDIT)),
+                JsonObject.class,
+                QueryParams.VIEW, DEFAULT_VIEW);
+        return result.getBody();
     }
 
     public JsonObject move(JsonObject object, JsonObject targetObject) {
-        throw new RuntimeException("Not implemented.");
+        JsonFeed parentLinks = restTemplate.get(
+                object.getHref(LinkRelation.PARENT_LINKS),
+                JsonFeed.class,
+                QueryParams.INLINE, "false")
+                .getBody();
+        String parentLinkUrl = parentLinks.getEntries().get(0).getContentSrc();
+        ResponseEntity<JsonObject> result = restTemplate.put(
+                parentLinkUrl,
+                new HrefObject(targetObject.getHref(LinkRelation.EDIT)),
+                JsonObject.class);
+        return result.getBody();
     }
 
     public void deleteObjectById(String id, boolean recursive) {
-        throw new RuntimeException("Not implemented.");
+        JsonObject object = querySingleObjectById(id);
+        restTemplate.delete(object.getHref(LinkRelation.SELF),
+                QueryParams.DELETE_NON_EMPTY, String.valueOf(recursive),
+                QueryParams.DELETE_ALL_LINKS, String.valueOf(recursive),
+                QueryParams.DELETE_ALL_VERSIONS, "all");
     }
 
     public JsonObject getObjectById(String id) {
