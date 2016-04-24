@@ -52,17 +52,20 @@ public class DctmRestClient implements InitializingBean {
         //TODO FOR ROUND 2 -- BEGIN
         //TODO FOR ROUND 2 -- RESOLVE 'repositoriesUri', FROM 'rootResources'
         String repositoriesUri = "";
-        //TODO FOR ROUND 2 -- END
+        
+        //TODO FOR ROUND 2 -- UNCOMMENT BELOW
+//        // get repositories
+//        ResponseEntity<JsonFeed> repositories = restTemplate
+//                .get(repositoriesUri, JsonFeed.class, QueryParams.INLINE, "true");
+//        for (JsonEntry repo : repositories.getBody().getEntries()) {
+//            if (data.repo.equals(repo.getTitle())) {
+//                repository = repo.getContentObject();
+//                break;
+//            }
+//        }
+        //TODO FOR ROUND 2 -- UNCOMMENT ABOVE
 
-        // get repositories
-        ResponseEntity<JsonFeed> repositories = restTemplate
-                .get(repositoriesUri, JsonFeed.class, QueryParams.INLINE, "true");
-        for (JsonEntry repo : repositories.getBody().getEntries()) {
-            if (data.repo.equals(repo.getTitle())) {
-                repository = repo.getContentObject();
-                break;
-            }
-        }
+        //TODO FOR ROUND 2 -- END
     }
 
     public List<JsonEntry> getAllCabinets(int pageNumber, int pageSize) {
