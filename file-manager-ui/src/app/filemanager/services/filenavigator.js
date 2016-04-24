@@ -46,6 +46,20 @@
             var path = self.currentPath.join('/');
             console.log(this) ;
 
+            //TODO FOR ROUND 2 -- BEGIN
+            //TODO FOR ROUND 2 -- RESOLVE 'requestUrl' AND 'data' FOR HTTP POST
+            var requestUrl = '';
+            var data = {};
+            //TODO FOR ROUND 2 -- END
+
+            $http.post(requestUrl , data).success(function(data) {
+                self.deferredHandler(data, deferred);
+            }).error(function(data) {
+                self.deferredHandler(data, deferred, 'Unknown error listing, check the response');
+            })['finally'](function() {
+                self.requesting = false;
+            });
+
             return deferred.promise;
         };
 

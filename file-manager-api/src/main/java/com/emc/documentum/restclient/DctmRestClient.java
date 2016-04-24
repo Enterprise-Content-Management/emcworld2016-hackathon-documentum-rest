@@ -42,15 +42,47 @@ public class DctmRestClient implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        // Not implemented
+        restTemplate = new DctmRestTemplate(data.username, data.password, false);
+        streamingTemplate = new DctmRestTemplate(data.username, data.password, true);
+
+        // get home doc
+        ResponseEntity<Map> homedoc = restTemplate.get(data.contextRootUri + "/services", Map.class);
+        Map rootResources = (Map) homedoc.getBody().get("resources");
+
+        //TODO FOR ROUND 2 -- BEGIN
+        //TODO FOR ROUND 2 -- RESOLVE 'repositoriesUri', FROM 'rootResources'
+        String repositoriesUri = "";
+        //TODO FOR ROUND 2 -- END
+
+        // get repositories
+        ResponseEntity<JsonFeed> repositories = restTemplate
+                .get(repositoriesUri, JsonFeed.class, QueryParams.INLINE, "true");
+        for (JsonEntry repo : repositories.getBody().getEntries()) {
+            if (data.repo.equals(repo.getTitle())) {
+                repository = repo.getContentObject();
+                break;
+            }
+        }
     }
 
     public List<JsonEntry> getAllCabinets(int pageNumber, int pageSize) {
-        throw new RuntimeException("Not implemented.");
+        //TODO FOR ROUND 2 -- BEGIN
+        //TODO FOR ROUND 2 -- RESOLVE 'cabinetsUrl', FROM 'repository'
+        String cabinetsUrl = "";
+        //TODO FOR ROUND 2 -- END
+
+        return getJsonEntriesByUrl(pageNumber, pageSize, cabinetsUrl);
     }
 
     public List<JsonEntry> getChildren(String path, int pageNumber, int pageSize) {
-        throw new RuntimeException("Not implemented.");
+        JsonObject folder = getObjectByPath(path);
+
+        //TODO FOR ROUND 2 -- BEGIN
+        //TODO FOR ROUND 2 -- RESOLVE 'childrenUrl', FROM 'folder'
+        String childrenUrl = "";
+        //TODO FOR ROUND 2 -- END
+
+        return getJsonEntriesByUrl(pageNumber, pageSize, childrenUrl);
     }
 
     public JsonObject createFolder(String parentId, String folderName) {
