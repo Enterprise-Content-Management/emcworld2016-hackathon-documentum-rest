@@ -17,11 +17,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriUtils;
 
 import com.emc.documentum.constants.AppRuntime;
+import com.emc.documentum.constants.DocumentumProperties;
 import com.emc.documentum.constants.LinkRelation;
 import com.emc.documentum.restclient.model.ByteArrayResource;
 import com.emc.documentum.restclient.model.JsonEntry;
 import com.emc.documentum.restclient.model.JsonFeed;
 import com.emc.documentum.restclient.model.JsonObject;
+import com.emc.documentum.restclient.model.PlainRestObject;
 import com.emc.documentum.restclient.util.QueryParams;
 
 @Component("DctmRestClient")
@@ -44,11 +46,16 @@ public class DctmRestClient implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         restTemplate = new DctmRestTemplate(data.username, data.password, false);
         streamingTemplate = new DctmRestTemplate(data.username, data.password, true);
+
         // get home doc
         ResponseEntity<Map> homedoc = restTemplate.get(data.contextRootUri + "/services", Map.class);
         Map rootResources = (Map) homedoc.getBody().get("resources");
+
+        //CODE FOR ROUND 2 -- BEGIN
+        //CODE FOR ROUND 2 -- RESOLVE 'repositoriesUri', FROM 'rootResources'
         Map repositoriesEntry = (Map) rootResources.get(LinkRelation.REPOSITORIES);
         String repositoriesUri = (String) repositoriesEntry.get("href");
+        //CODE FOR ROUND 2 -- END
 
         // get repositories
         ResponseEntity<JsonFeed> repositories = restTemplate
@@ -62,18 +69,38 @@ public class DctmRestClient implements InitializingBean {
     }
 
     public List<JsonEntry> getAllCabinets(int pageNumber, int pageSize) {
+        //CODE FOR ROUND 2 -- BEGIN
+        //CODE FOR ROUND 2 -- RESOLVE 'cabinetsUrl', FROM 'repository'
         String cabinetsUrl = repository.getHref(LinkRelation.CABINETS);
+        //CODE FOR ROUND 2 -- END
+
         return getJsonEntriesByUrl(pageNumber, pageSize, cabinetsUrl);
     }
 
     public List<JsonEntry> getChildren(String path, int pageNumber, int pageSize) {
         JsonObject folder = getObjectByPath(path);
+
+        //CODE FOR ROUND 2 -- BEGIN
+        //CODE FOR ROUND 2 -- RESOLVE 'childrenUrl', FROM 'folder'
         String childrenUrl = folder.getHref(LinkRelation.OBJECTS);
+        //CODE FOR ROUND 2 -- END
+
         return getJsonEntriesByUrl(pageNumber, pageSize, childrenUrl);
     }
 
     public JsonObject createFolder(String parentId, String folderName) {
-        throw new RuntimeException("Not implemented.");
+        JsonObject parentFolder = getObjectById(parentId);
+
+        //TODO FOR ROUND 3 -- BEGIN
+        //TODO FOR ROUND 3 -- RESOLVE 'childFoldersUrl', FROM 'parentFolder'
+        String childFoldersUrl = "";
+        //TODO FOR ROUND3 -- END
+
+        ResponseEntity<JsonObject> result = restTemplate.post(childFoldersUrl,
+                new PlainRestObject("dm_folder", singleProperty(DocumentumProperties.OBJECT_NAME, folderName)),
+                JsonObject.class,
+                QueryParams.VIEW, DEFAULT_VIEW);
+        return result.getBody();
     }
 
     public JsonObject update(JsonObject object, Map<String, Object> newProperties) {
@@ -100,6 +127,10 @@ public class DctmRestClient implements InitializingBean {
         throw new RuntimeException("Not implemented.");
     }
 
+    public JsonObject updateContent(JsonObject doc, byte[] data) {
+        throw new RuntimeException("Not implemented.");
+    }
+
     public List<JsonEntry> simpleSearch(String terms, String path, int page, int itemsPerPage) {
         throw new RuntimeException("Not implemented.");
     }
@@ -118,10 +149,6 @@ public class DctmRestClient implements InitializingBean {
                 JsonObject.class,
                 QueryParams.VIEW, DEFAULT_VIEW);
         return result.getBody();
-    }
-
-    public JsonObject updateContent(JsonObject doc, byte[] data) {
-        throw new RuntimeException("Not implemented.");
     }
 
     private Map<String, Object> singleProperty(String property, String value) {

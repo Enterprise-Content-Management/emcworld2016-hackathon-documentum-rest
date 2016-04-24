@@ -44,7 +44,11 @@
 
             var deferred = $q.defer();
             var path = self.currentPath.join('/');
+            console.log(this) ;
 
+            //CODE FOR ROUND 2 -- BEGIN
+            //CODE FOR ROUND 2 -- RESOLVE 'requestUrl' AND 'data' FOR HTTP POST
+            var requestUrl = fileManagerConfig.listUrl;
             var data = {
                 action: 'list',
                 path: '/' + path,
@@ -55,9 +59,9 @@
                     pageSize: this.pageSize
                 }
             };
-            console.log(this) ;
+            //CODE FOR ROUND 2 -- END
 
-            $http.post(fileManagerConfig.listUrl , data).success(function(data) {
+            $http.post(requestUrl , data).success(function(data) {
                 self.deferredHandler(data, deferred);
             }).error(function(data) {
                 self.deferredHandler(data, deferred, 'Unknown error listing, check the response');

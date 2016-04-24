@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.emc.documentum.exceptions.DocumentumException;
 import com.emc.documentum.filemanager.api.FileManagerApi;
 import com.emc.documentum.filemanager.dtos.in.BaseRequest;
+import com.emc.documentum.filemanager.dtos.in.CreateObjectRequest;
 import com.emc.documentum.filemanager.dtos.out.Collection;
+import com.emc.documentum.filemanager.dtos.out.CommonResult;
 import com.emc.documentum.filemanager.dtos.out.Item;
 import com.google.common.base.Strings;
 
@@ -56,6 +58,19 @@ public class FileManagerController extends BaseController {
             result = fileManagerApi.getChildren(path, pageNumber, pageSize);
         }
         return result;
+    }
+
+    @RequestMapping(value = "/createFolderUrl",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public CommonResult createFolder(@RequestBody CreateObjectRequest request) throws DocumentumException {
+
+        //TODO FOR ROUND 3 -- BEGIN
+        //TODO FOR ROUND 3 -- CALL 'fileManagerApi' to create folder.
+
+        //TODO FOR ROUND 3 -- END
+        return successResponse();
     }
 
     private boolean isRoot(String path) {
