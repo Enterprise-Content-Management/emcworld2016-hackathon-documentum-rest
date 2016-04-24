@@ -150,10 +150,28 @@ public class DctmRestClient implements InitializingBean {
     }
 
     public JsonObject updateContent(JsonObject doc, byte[] data) {
-        //TODO FOR ROUND 5 -- BEGIN
-        //TODO FOR ROUND 5 -- IMPLEMENT
-        return new JsonObject();
-        //TODO FOR ROUND 5 -- END
+        //CODE FOR ROUND 5 -- BEGIN
+        //CODE FOR ROUND 5 -- IMPLEMENT
+        String format = (String) doc.getPropertyByName(DocumentumProperties.CONTENT_TYPE);
+        ResponseEntity<JsonObject> result = streamingTemplate.post(doc.getHref(LinkRelation.CONTENTS),
+                data,
+                JsonObject.class,
+                QueryParams.OVERWRITE, "true",
+                QueryParams.FORMAT, format);
+        return result.getBody();
+        //CODE FOR ROUND 5 -- END
+    }
+
+    public List<JsonEntry> simpleSearch(String terms, String path, int page, int itemsPerPage) {
+        //TODO FOR ROUND 6 -- BEGIN
+        //TODO FOR ROUND 6 -- IMPLEMENT
+        String searchUrl = "";
+        String[] queryParams = new String[0];
+        //TODO FOR ROUND 6 -- END
+        ResponseEntity<JsonFeed> result = restTemplate.get(searchUrl,
+                JsonFeed.class,
+                queryParams);
+        return result.getBody().getEntries();
     }
 
     public JsonObject update(JsonObject object, Map<String, Object> newProperties) {
@@ -169,10 +187,6 @@ public class DctmRestClient implements InitializingBean {
     }
 
     public void deleteObjectById(String id, boolean recursive) {
-        throw new RuntimeException("Not implemented.");
-    }
-
-    public List<JsonEntry> simpleSearch(String terms, String path, int page, int itemsPerPage) {
         throw new RuntimeException("Not implemented.");
     }
 

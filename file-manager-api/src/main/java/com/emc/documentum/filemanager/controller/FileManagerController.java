@@ -134,12 +134,26 @@ public class FileManagerController extends BaseController {
         return new Data(content.getData(), content.getMime().toString());
     }
 
-    //TODO FOR ROUND 5 -- BEGIN
-    //TODO FOR ROUND 5 -- RESOLVE @RequestMapping
-    //TODO FOR ROUND 5 -- END
+    //CODE FOR ROUND 5 -- BEGIN
+    //CODE FOR ROUND 5 -- RESOLVE @RequestMapping
+    @RequestMapping(value = "/editUrl", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    //CODE FOR ROUND 5 -- END
     public CommonResult editContent(@RequestBody CreateObjectRequest request) throws DocumentumException {
         fileManagerApi.updateContent(request.getId(), request.getContent());
         return successResponse();
+    }
+
+    @RequestMapping(value = "/searchUrl",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Collection search(@RequestBody BaseRequest request) throws DocumentumException {
+        Collection result = fileManagerApi.search(
+                request.getParam("terms"),
+                request.getPath(),
+                request.getIntParam("pageNumber", 1),
+                request.getIntParam("pageSize", 100));
+        return result;
     }
 
     private boolean isRoot(String path) {
