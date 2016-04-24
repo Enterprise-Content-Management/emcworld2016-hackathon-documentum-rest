@@ -4,6 +4,7 @@
 
 package com.emc.documentum.restclient;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
 
@@ -81,7 +82,21 @@ public class DctmRestTemplate {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(DCTM_VND_JSON_TYPE, MediaType.APPLICATION_JSON));
 
-        headers.setContentType(DCTM_VND_JSON_TYPE);
+        //CODE FOR ROUND 3 -- BEGIN
+        //CODE FOR ROUND 3 -- SET REQUEST CONTENT TYPE FOR JSON
+        // headers.setContentType(DCTM_VND_JSON_TYPE);
+        //CODE FOR ROUND 3 -- END
+
+        // improved for multi content types in request bodies
+        if (requestBody instanceof MultiValueMap) {
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        } else if (requestBody instanceof byte[] || requestBody instanceof InputStream) {
+            // a placeholder - the real content format is specified by query param
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        }
+        else {
+            headers.setContentType(DCTM_VND_JSON_TYPE);
+        }
 
         return headers;
     }

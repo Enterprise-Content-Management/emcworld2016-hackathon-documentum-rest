@@ -12,8 +12,11 @@ import java.util.Map;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriUtils;
 
 import com.emc.documentum.constants.AppRuntime;
@@ -46,11 +49,16 @@ public class DctmRestClient implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         restTemplate = new DctmRestTemplate(data.username, data.password, false);
         streamingTemplate = new DctmRestTemplate(data.username, data.password, true);
+
         // get home doc
         ResponseEntity<Map> homedoc = restTemplate.get(data.contextRootUri + "/services", Map.class);
         Map rootResources = (Map) homedoc.getBody().get("resources");
+
+        //CODE FOR ROUND 2 -- BEGIN
+        //CODE FOR ROUND 2 -- RESOLVE 'repositoriesUri', FROM 'rootResources'
         Map repositoriesEntry = (Map) rootResources.get(LinkRelation.REPOSITORIES);
         String repositoriesUri = (String) repositoriesEntry.get("href");
+        //CODE FOR ROUND 2 -- END
 
         // get repositories
         ResponseEntity<JsonFeed> repositories = restTemplate
@@ -64,25 +72,88 @@ public class DctmRestClient implements InitializingBean {
     }
 
     public List<JsonEntry> getAllCabinets(int pageNumber, int pageSize) {
+        //CODE FOR ROUND 2 -- BEGIN
+        //CODE FOR ROUND 2 -- RESOLVE 'cabinetsUrl', FROM 'repository'
         String cabinetsUrl = repository.getHref(LinkRelation.CABINETS);
+        //CODE FOR ROUND 2 -- END
+
         return getJsonEntriesByUrl(pageNumber, pageSize, cabinetsUrl);
     }
 
     public List<JsonEntry> getChildren(String path, int pageNumber, int pageSize) {
         JsonObject folder = getObjectByPath(path);
+
+        //CODE FOR ROUND 2 -- BEGIN
+        //CODE FOR ROUND 2 -- RESOLVE 'childrenUrl', FROM 'folder'
         String childrenUrl = folder.getHref(LinkRelation.OBJECTS);
+        //CODE FOR ROUND 2 -- END
+
         return getJsonEntriesByUrl(pageNumber, pageSize, childrenUrl);
     }
 
     public JsonObject createFolder(String parentId, String folderName) {
         JsonObject parentFolder = getObjectById(parentId);
-        String childFoldersUrl = parentFolder.getHref(LinkRelation.FOLDERS);
+
+        //CODE FOR ROUND 3 -- BEGIN
+        //CODE FOR ROUND 3 -- RESOLVE 'childFoldersUrl', FROM 'parentFolder'
+        String childFoldersUrl = parentFolder.getHref(LinkRelation.FOLDERS);;
+        //CODE FOR ROUND3 -- END
 
         ResponseEntity<JsonObject> result = restTemplate.post(childFoldersUrl,
                 new PlainRestObject("dm_folder", singleProperty(DocumentumProperties.OBJECT_NAME, folderName)),
                 JsonObject.class,
                 QueryParams.VIEW, DEFAULT_VIEW);
         return result.getBody();
+    }
+
+    public JsonObject createContentfulDocument(JsonObject folder, byte[] data, String filename, String mime) {
+        MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
+
+        //CODE FOR ROUND 4 -- BEGIN
+        //CODE FOR ROUND 4 -- RESOLVE 'part1'
+        PlainRestObject doc = new PlainRestObject("dm_document",
+                singleProperty(DocumentumProperties.OBJECT_NAME, filename));
+        MultiValueMap<String, String> part1Headers = new LinkedMultiValueMap<>();
+        part1Headers.set("Content-Type", DctmRestTemplate.DCTM_VND_JSON_TYPE.toString());
+        HttpEntity part1 = new HttpEntity<>(doc, part1Headers);
+        //CODE FOR ROUND4 -- END
+        parts.add("metadata", part1);
+
+        //CODE FOR ROUND 4 -- BEGIN
+        //CODE FOR ROUND 4 -- RESOLVE 'part2'
+        MultiValueMap<String, String> part2Headers = new LinkedMultiValueMap<>();
+        part2Headers.set("Content-Type", mime);
+        HttpEntity part2 = new HttpEntity<>(data, part2Headers);
+        //CODE FOR ROUND4 -- END
+        parts.add("binary", part2);
+
+        ResponseEntity<JsonObject> result = streamingTemplate.post(folder.getHref(LinkRelation.DOCUMENTS),
+                parts,
+                JsonObject.class);
+        return result.getBody();
+    }
+
+    public ByteArrayResource getContentById(String docId) {
+        JsonObject object = getObjectById(docId);
+        JsonObject contentMeta = restTemplate.get(
+                object.getHref(LinkRelation.PRIMARY_CONTENT),
+                JsonObject.class,
+                QueryParams.MEDIA_URL_POLICY, "local")
+                .getBody();
+        ResponseEntity<byte[]> content = streamingTemplate.get(contentMeta.getHref(LinkRelation.CONTENT_MEDIA), byte[].class);
+        return new ByteArrayResource(
+                content.getBody(),
+                (String) contentMeta.getPropertyByName(DocumentumProperties.OBJECT_NAME),
+                (String) contentMeta.getPropertyByName(DocumentumProperties.DOS_EXTENSION),
+                content.getHeaders().getContentType(),
+                content.getHeaders().getContentLength());
+    }
+
+    public JsonObject updateContent(JsonObject doc, byte[] data) {
+        //TODO FOR ROUND 5 -- BEGIN
+        //TODO FOR ROUND 5 -- IMPLEMENT
+        return new JsonObject();
+        //TODO FOR ROUND 5 -- END
     }
 
     public JsonObject update(JsonObject object, Map<String, Object> newProperties) {
@@ -98,14 +169,6 @@ public class DctmRestClient implements InitializingBean {
     }
 
     public void deleteObjectById(String id, boolean recursive) {
-        throw new RuntimeException("Not implemented.");
-    }
-
-    public ByteArrayResource getContentById(String docId) {
-        throw new RuntimeException("Not implemented.");
-    }
-
-    public JsonObject createContentfulDocument(JsonObject folder, byte[] data, String filename, String mime) {
         throw new RuntimeException("Not implemented.");
     }
 
@@ -127,10 +190,6 @@ public class DctmRestClient implements InitializingBean {
                 JsonObject.class,
                 QueryParams.VIEW, DEFAULT_VIEW);
         return result.getBody();
-    }
-
-    public JsonObject updateContent(JsonObject doc, byte[] data) {
-        throw new RuntimeException("Not implemented.");
     }
 
     private Map<String, Object> singleProperty(String property, String value) {
