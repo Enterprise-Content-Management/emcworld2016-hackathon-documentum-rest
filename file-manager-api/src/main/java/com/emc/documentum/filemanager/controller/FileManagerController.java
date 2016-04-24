@@ -4,9 +4,14 @@
 
 package com.emc.documentum.filemanager.controller;
 
+import java.io.IOException;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Locale;
+import javax.servlet.ServletException;
+import javax.servlet.http.Part;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.MediaType;
@@ -15,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.emc.documentum.exceptions.DocumentumException;
 import com.emc.documentum.filemanager.api.FileManagerApi;
@@ -65,8 +71,36 @@ public class FileManagerController extends BaseController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public CommonResult createFolder(@RequestBody CreateObjectRequest request) throws DocumentumException {
+
+        //CODE FOR ROUND 3 -- BEGIN
+        //CODE FOR ROUND 3 -- CALL 'fileManagerApi' to create folder.
         fileManagerApi.createFolderByParentId(request.getParentId(), request.getName());
+        //CODE FOR ROUND 3 -- END
         return successResponse();
+    }
+
+    @RequestMapping(value = "/uploadUrl",
+            method = RequestMethod.POST,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public CommonResult uploadContent(MultipartHttpServletRequest request) throws DocumentumException {
+        try {
+            String targetFolderPath = null;
+            Iterator<Part> parts = request.getParts().iterator();
+            while (parts.hasNext()) {
+                Part next = parts.next();
+                if ("destination".equals(next.getName())) {
+                    targetFolderPath = IOUtils.toString(next.getInputStream());
+                } else {
+                    String filename = next.getSubmittedFileName();
+                    String mime = next.getContentType();
+                    fileManagerApi.uploadContent(targetFolderPath, next.getInputStream(), filename, mime);
+                }
+            }
+            return successResponse();
+        } catch (ServletException | IOException e) {
+            throw new DocumentumException("Fail to receive multipart file upload.", e);
+        }
     }
 
     private boolean isRoot(String path) {
