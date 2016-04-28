@@ -14,7 +14,7 @@
             this.error = '';
             this.folderId = '' ;
 			this.pageNumber = 1;
-			this.pageSize = 10;
+			this.pageSize = 20;
         };
 
         FileNavigator.prototype.deferredHandler = function(data, deferred, defaultMsg) {
