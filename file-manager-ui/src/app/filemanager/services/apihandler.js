@@ -17,12 +17,14 @@
                 self.inprocess = true;
                 self.error = '';
 
-                //TODO FOR ROUND 3 -- BEGIN
-                //TODO FOR ROUND 3 -- RESOLVE 'requestUrl' AND 'data' FOR HTTP POST
-                var requestUrl = '';
-                var data = {};
-                //TODO FOR ROUND 3 -- END
-                
+                var requestUrl = apiUrl;
+                var data = {
+                    action: 'createFolder',
+                    newPath: item.path,
+                    name: item.tempModel.name,
+                    parentId: item.tempModel.id
+                };
+
                 $http.post(requestUrl, data).success(function(data) {
                     self.deferredHandler(data, deferred);
                 }).error(function(data) {

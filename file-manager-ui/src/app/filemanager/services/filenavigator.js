@@ -46,11 +46,17 @@
             var path = self.currentPath.join('/');
             console.log(this) ;
 
-            //TODO FOR ROUND 2 -- BEGIN
-            //TODO FOR ROUND 2 -- RESOLVE 'requestUrl' AND 'data' FOR HTTP POST
-            var requestUrl = '';
-            var data = {};
-            //TODO FOR ROUND 2 -- END
+            var requestUrl = fileManagerConfig.listUrl;
+            var data = {
+                action: 'list',
+                path: '/' + path,
+                id: this.folderId,
+                params: {
+                    onlyFolders: false,
+                    pageNumber: this.pageNumber,
+                    pageSize: this.pageSize
+                }
+            };
 
             $http.post(requestUrl , data).success(function(data) {
                 self.deferredHandler(data, deferred);
@@ -149,7 +155,7 @@
             this.currentPath = this.currentPath.slice(0, index + 1);
             this.refresh();
         };
-		
+
         FileNavigator.prototype.hasPrevious = function(){
             console.log(this.pageNumber > 1)
             return this.pageNumber > 1;
@@ -168,7 +174,7 @@
 			this.pageNumber++;
 			this.getPage(this.pageNumber);
 		}
-		
+
 		FileNavigator.prototype.previousPage = function(){
 			console.log("Getting Previous Page");
 			if(!this.hasPrevious()){
@@ -177,9 +183,9 @@
 			}
 			this.pageNumber--;
 			this.getPage(this.pageNumber);
-			
+
 		}
-		
+
 		FileNavigator.prototype.getPage = function(pageNumber){
 			console.log("Getting Page number" + pageNumber);
 			this.refresh();
@@ -201,12 +207,12 @@
                 }
             }
         };
-            
+
         FileNavigator.prototype.currentFullPath = function () {
             var path = this.currentPath.join('/');
             return '/' + path;
         };
-            
+
         return FileNavigator;
     }]);
 })(angular);
